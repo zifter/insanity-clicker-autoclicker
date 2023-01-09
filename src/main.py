@@ -11,6 +11,9 @@ from autoclicker import Autoclicker
 from insanity_clicker import InstanityClickerApp
 
 
+logger = logging.getLogger('main')
+
+
 async def main():
     app = InstanityClickerApp.create()
     clicker = Autoclicker(app)
@@ -21,7 +24,7 @@ async def main():
     while not shutdown.triggered and await clicker.beat():
         await asyncio.sleep(1)
 
-    logging.info('Finished clicker')
+    await clicker.stop()
 
     return True
 

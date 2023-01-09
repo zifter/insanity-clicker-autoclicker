@@ -13,7 +13,7 @@ class Autoclicker:
     def __init__(self, app: InstanityClickerApp):
         self.app: InstanityClickerApp = app
         self.tasks = [
-            CronTask('*/1 * * * *', self.trigger_perks_in_order),
+            CronTask('*/3 * * * *', self.trigger_perks_in_order),
             # CronTask('*/1 * * * *', self.try_find_and_open_chest),
         ]
         self.stats = Stats()
@@ -21,9 +21,14 @@ class Autoclicker:
     async def start(self):
         logging.info('Start insanity clicker auto clicker!')
 
+        await self.app.turn_on_automatic_progress()
+
         now = datetime.now()
         for task in self.tasks:
             task.schedule(now)
+
+    async def stop(self):
+        logger.info('Finished clicker')
 
     async def beat(self) -> bool:
         now = datetime.now()
@@ -33,9 +38,20 @@ class Autoclicker:
         return True
 
     async def trigger_perks_in_order(self):
-        logger.debug('Trigger buttons')
+        logger.debug('Trigger perks')
 
-        for i in [1, 2, 3, 'h', 'e', 'l', 'l', '0']:
+        # https://steamcommunity.com/sharedfiles/filedetails/?id=705525781
+        for i in [
+            InstanityClickerApp.PERK.FLURRY_OF_BLOWS_1,
+            InstanityClickerApp.PERK.TITAN_STRENGTH_2,
+            InstanityClickerApp.PERK.WEAK_SPOT_3,
+            InstanityClickerApp.PERK.TEETH_KNOCKER_5,
+            InstanityClickerApp.PERK.BROKEN_JAWS_5,
+            InstanityClickerApp.PERK.MAD_HATTERS_CLOCKS_9,
+            InstanityClickerApp.PERK.LENS_OF_DARKNESS_8,
+            InstanityClickerApp.PERK.INSANE_RAGE_7,
+            # InstanityClickerApp.Perk.BROKEN_JAWS_5,  # again, after 30 seconds
+        ]:
             await self.app.use_perk(i)
 
     async def try_find_and_open_chest(self):

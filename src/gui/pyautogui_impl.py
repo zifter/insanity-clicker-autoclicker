@@ -10,6 +10,7 @@ logger = logging.getLogger('pyautogui-impl')
 
 class PyAutoGUIImpl(GUIBase):
     async def press_key(self, key_name: str):
+        logger.info('Press key %s', key_name)
         pyautogui.press(key_name)
 
     async def locate_on_screen(self, image: str):  # -> PIL.Image.Image:
