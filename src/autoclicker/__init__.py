@@ -1,5 +1,5 @@
 import logging
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from autoclicker.crontask import CronTask
 from autoclicker.stats import Stats
@@ -13,8 +13,8 @@ class Autoclicker:
     def __init__(self, app: InstanityClickerApp):
         self.app: InstanityClickerApp = app
         self.tasks = [
-            CronTask('*/3 * * * *', self.trigger_perks_in_order),
-            # CronTask('*/1 * * * *', self.try_find_and_open_chest),
+            # CronTask(timedelta(minutes=2, seconds=35), self.trigger_perks_in_order),
+            CronTask(timedelta(seconds=15), self.try_find_and_open_chest),
         ]
         self.stats = Stats()
 
@@ -55,10 +55,12 @@ class Autoclicker:
             await self.app.use_perk(i)
 
     async def try_find_and_open_chest(self):
-        logger.debug('find chest')
+        logger.debug('try_find_and_open_chest')
 
         chest = await self.app.find_chest()
         if chest is None:
             return
+
+        await self.app.click(chest.x, chest.y)
 
         self.stats.opened_chest += 1

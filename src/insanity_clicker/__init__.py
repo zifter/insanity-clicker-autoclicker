@@ -2,6 +2,7 @@ import logging
 from enum import Enum
 
 import gui
+from common import get_res_path
 from gui.base import GUIBase
 from insanity_clicker.chest import Chest
 
@@ -33,9 +34,20 @@ class InstanityClickerApp:
         await self.gui.press_key(str(perk.value))
 
     async def find_chest(self) -> Chest | None:
-        screenshot = await self.gui.locate_on_screen('chest.png')
-        return None
+        logger.debug('find chest')
+        pos = await self.gui.locate_on_screen(get_res_path() / 'chest_part.png')
+        if pos is None:
+            logger.debug('chest is not found')
+            return None
+
+        logger.debug('chest is found')
+        return Chest(pos)
 
     async def turn_on_automatic_progress(self) -> bool:
         logger.info('Try to turn on automatic progress')
         return False
+
+    async def click(self, x, y):
+        logger.info('click on %s, %s', x, y)
+
+        await self.gui.click(x, y)

@@ -1,20 +1,17 @@
-from datetime import datetime
-
-from croniter import croniter
+from datetime import datetime, timedelta
 
 
 class CronTask:
-    def __init__(self, cron, on_trigger):
-        self.cron = cron
+    def __init__(self, delta: timedelta, on_trigger):
+        self.delta = delta
         self.on_trigger = on_trigger
         self.next_trigger_time: datetime | None = None
 
     def _get_next_trigger_time(self, dt) -> datetime:
-        return croniter(self.cron, dt).get_next(ret_type=datetime)
+        return dt + self.delta
 
     def schedule(self, dt):
-        self.next_trigger_time = self._get_next_trigger_time(dt)
-        pass
+        self.next_trigger_time = dt
 
     async def try_trigger(self, dt) -> bool:
         if dt > self.next_trigger_time:

@@ -8,7 +8,7 @@ python_version = '3.10.7'
 
 [packages]
 pyautogui = "*"
-croniter = "==1.3.8"
+opencv-python = "==4.7.0.68"
 gracefull-shutdown-py = "==v0.1.0"
 Pillow = "*"
 

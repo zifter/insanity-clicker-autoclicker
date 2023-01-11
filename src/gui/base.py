@@ -1,4 +1,5 @@
 import abc
+from pathlib import Path
 
 
 class GUIBase:
@@ -10,7 +11,11 @@ class GUIBase:
         pass
 
     @abc.abstractmethod
-    async def locate_on_screen(self, image):
+    async def locate_on_screen(self, image_path: Path):
+        pass
+
+    @abc.abstractmethod
+    async def click(self, x: int, y: int):
         pass
 
     @abc.abstractmethod
