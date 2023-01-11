@@ -13,8 +13,9 @@ class Autoclicker:
     def __init__(self, app: InstanityClickerApp):
         self.app: InstanityClickerApp = app
         self.tasks = [
-            CronTask(timedelta(minutes=0, seconds=5), self.trigger_perks_in_order),
-            CronTask(timedelta(seconds=15), self.try_find_and_open_chest),
+            CronTask(timedelta(minutes=2, seconds=35), self.trigger_perks_in_order),
+            CronTask(timedelta(seconds=30), self.try_find_and_open_chest),
+            CronTask(timedelta(seconds=5), self.try_level_up),
         ]
         self.stats = Stats()
 
@@ -29,6 +30,8 @@ class Autoclicker:
 
     async def stop(self):
         logger.info('Finished clicker')
+
+        logger.info('Stats:\n%s', self.stats)
 
     async def beat(self) -> bool:
         now = datetime.now()
@@ -53,6 +56,7 @@ class Autoclicker:
             # InstanityClickerApp.Perk.BROKEN_JAWS_5,  # again, after 30 seconds
         ]:
             await self.app.use_perk(i)
+            self.stats.triggered_perks += 1
 
     async def try_find_and_open_chest(self):
         logger.debug('try_find_and_open_chest')
@@ -64,3 +68,6 @@ class Autoclicker:
         await self.app.click(chest.x, chest.y)
 
         self.stats.opened_chest += 1
+
+    async def try_level_up(self):
+        self.stats.level_ups += await self.app.click_level_up()

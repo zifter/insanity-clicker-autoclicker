@@ -35,20 +35,22 @@ class InstanityClickerApp:
 
     async def find_chest(self) -> Chest | None:
         logger.debug('find chest')
-        pos = await self.gui.locate_on_screen(get_res_path() / 'chest_part.png')
-        if pos is None:
-            logger.debug('chest is not found')
-            return None
+        positions = await self.gui.locate_on_screen(get_res_path() / 'chest_part.png')
+        if positions:
+            pos = positions[0]
+            logger.debug('chest is found')
+            return Chest(pos)
 
-        logger.debug('chest is found')
-        return Chest(pos)
+        logger.debug('chest is not found')
+        return None
 
     async def turn_on_automatic_progress(self) -> bool:
         logger.info('Try to turn on automatic progress')
-        pos = await self.gui.locate_on_screen(get_res_path() / 'btn_auto_prgress.png')
-        if pos:
+        positions = await self.gui.locate_on_screen(get_res_path() / 'btn_auto_progress.png')
+        if positions:
+            pos = positions[0]
             logger.debug('turn on automatic progress')
-            await self.gui.click(p.x, p.y)
+            await self.gui.click(pos.x, pos.y)
             return True
 
         return False
@@ -57,3 +59,11 @@ class InstanityClickerApp:
         logger.info('click on %s, %s', x, y)
 
         await self.gui.click(x, y)
+
+    async def click_level_up(self) -> int:
+        logger.info('Click level up')
+        positions = await self.gui.locate_on_screen(get_res_path() / 'btn_level_up.png')
+        for pos in positions:
+            await self.gui.click(pos.x, pos.y)
+
+        return len(positions)
