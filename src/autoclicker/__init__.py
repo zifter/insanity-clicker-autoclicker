@@ -42,7 +42,7 @@ class Autoclicker:
 
     async def trigger_perks_in_order(self):
         logger.debug('Trigger perks')
-
+        self.stats.triggered_perks += 1
         # https://steamcommunity.com/sharedfiles/filedetails/?id=705525781
         for i in [
             InstanityClickerApp.PERK.FLURRY_OF_BLOWS_1,
@@ -56,7 +56,6 @@ class Autoclicker:
             # InstanityClickerApp.Perk.BROKEN_JAWS_5,  # again, after 30 seconds
         ]:
             await self.app.use_perk(i)
-            self.stats.triggered_perks += 1
 
     async def try_find_and_open_chest(self):
         logger.debug('try_find_and_open_chest')

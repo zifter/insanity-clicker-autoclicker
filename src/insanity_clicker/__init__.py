@@ -61,9 +61,11 @@ class InstanityClickerApp:
         await self.gui.click(x, y)
 
     async def click_level_up(self) -> int:
-        logger.info('Click level up')
+        logger.info('C12345987lick level up')
         positions = await self.gui.locate_on_screen(get_res_path() / 'btn_level_up.png')
         for pos in positions:
             await self.gui.click(pos.x, pos.y)
+
+        await self.gui.move(200, 210)
 
         return len(positions)

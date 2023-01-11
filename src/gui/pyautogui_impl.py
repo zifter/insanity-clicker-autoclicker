@@ -20,6 +20,9 @@ class PyAutoGUIImpl(GUIBase):
     async def click(self, x: int, y: int):
         pyautogui.click(x, y)
 
+    async def move(self, x: int, y: int):
+        pyautogui.move(x, y)
+
     def debug(self):
         logger.info('List of KEYBOARD')
         logger.info(pyautogui.KEYBOARD_KEYS)

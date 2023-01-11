@@ -19,5 +19,9 @@ class GUIBase:
         pass
 
     @abc.abstractmethod
+    async def move(self, x: int, y: int):
+        pass
+
+    @abc.abstractmethod
     def debug(self):
         pass
