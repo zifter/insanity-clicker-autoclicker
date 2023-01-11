@@ -13,7 +13,7 @@ class Autoclicker:
     def __init__(self, app: InstanityClickerApp):
         self.app: InstanityClickerApp = app
         self.tasks = [
-            # CronTask(timedelta(minutes=2, seconds=35), self.trigger_perks_in_order),
+            CronTask(timedelta(minutes=0, seconds=5), self.trigger_perks_in_order),
             CronTask(timedelta(seconds=15), self.try_find_and_open_chest),
         ]
         self.stats = Stats()

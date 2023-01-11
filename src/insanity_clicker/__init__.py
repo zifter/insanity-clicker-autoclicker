@@ -45,6 +45,12 @@ class InstanityClickerApp:
 
     async def turn_on_automatic_progress(self) -> bool:
         logger.info('Try to turn on automatic progress')
+        pos = await self.gui.locate_on_screen(get_res_path() / 'btn_auto_prgress.png')
+        if pos:
+            logger.debug('turn on automatic progress')
+            await self.gui.click(p.x, p.y)
+            return True
+
         return False
 
     async def click(self, x, y):
