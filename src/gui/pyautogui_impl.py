@@ -10,6 +10,11 @@ logger = logging.getLogger('pyautogui-impl')
 
 
 class PyAutoGUIImpl(GUIBase):
+    def __init__(self):
+        super().__init__()
+
+        # pyautogui.FAILSAFE = False
+
     async def press_key(self, key_name: str):
         logger.info('Press key %s', key_name)
         pyautogui.press(key_name)
@@ -22,6 +27,9 @@ class PyAutoGUIImpl(GUIBase):
 
     async def position(self) -> Point:
         return pyautogui.position()
+
+    async def move_to(self, p: Point):
+        pyautogui.moveTo(p.x, p.y)
 
     async def move(self, p: Point):
         pyautogui.move(p.x, p.y)

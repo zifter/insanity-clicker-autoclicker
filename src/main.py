@@ -1,15 +1,11 @@
 import logging
 from logging.config import fileConfig
 
-from autoclicker import Runner
-
 fileConfig('logging.ini')
 
-
 import asyncio
-
 from gracefull_shutdown import ExitSignalHandler
-
+from autoclicker import Runner
 from insanity_clicker import InsanityClickerApp
 
 
