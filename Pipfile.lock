@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "2b7bac8fcf4171ab8e8c9574a887117551d8c0a6b0a1b9f542f2d014cf79f456"
+            "sha256": "01e7a5df0c123c8d5f9beff05d4a4fe5b3af198111a3a7aa23848008a54ab2b3"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -69,7 +69,7 @@
                 "sha256:ef85cf1f693c88c1fd229ccd1055570cb41cdf4875873b7728b6301f12cd05bf",
                 "sha256:f1b739841821968798947d3afcefd386fa56da0caf97722a5de53e07c4ccedc7"
             ],
-            "markers": "python_version >= '3.8'",
+            "markers": "python_version >= '3.10'",
             "version": "==1.24.1"
         },
         "opencv-python": {
@@ -276,6 +276,14 @@
             ],
             "index": "pypi",
             "version": "==7.2.0"
+        },
+        "pytest-asyncio": {
+            "hashes": [
+                "sha256:83cbf01169ce3e8eb71c6c278ccb0574d1a7a3bb8eaaf5e50e0ad342afb33b36",
+                "sha256:f129998b209d04fcc65c96fc85c11e5316738358909a8399e93be553d7656442"
+            ],
+            "index": "pypi",
+            "version": "==0.20.3"
         },
         "tomli": {
             "hashes": [

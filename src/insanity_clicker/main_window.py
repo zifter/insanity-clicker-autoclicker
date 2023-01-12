@@ -38,9 +38,10 @@ class WindowBase:
 
         return False
 
-    async def _find_and_click_on_all_buttons(self, button_image_name) -> int:
+    async def _find_and_click_on_all_buttons(self, button_image_name, sort=sorted) -> int:
         async with restore_position(self.gui):
             positions = await self.gui.locate_on_screen(get_res_path() / button_image_name)
+            positions = sort(positions)
             for p in positions:
                 await self._click(p)
 
@@ -78,7 +79,8 @@ class MainWindow(WindowBase):
 
     async def click_level_up(self):
         logger.info('click level up')
-        self.stats.level_ups += await self._find_and_click_on_all_buttons('btn_level_up.png')
+        sort = lambda l: sorted(l, key=lambda v: v.x)
+        self.stats.level_ups += await self._find_and_click_on_all_buttons('btn_level_up.png', sort=sort)
 
     async def monster_scroll_up(self) -> bool:
         logger.info('scroll up level')

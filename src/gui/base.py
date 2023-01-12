@@ -1,11 +1,10 @@
 import abc
+from collections import namedtuple
 from pathlib import Path
 from typing import List
 
 
-class Point:
-    x: int
-    y: int
+Point = namedtuple('Point', ['x', 'y'])
 
 
 class GUIBase:
