@@ -1,5 +1,8 @@
 import logging
 from logging.config import fileConfig
+
+from autoclicker import Runner
+
 fileConfig('logging.ini')
 
 
@@ -7,26 +10,18 @@ import asyncio
 
 from gracefull_shutdown import ExitSignalHandler
 
-from autoclicker import Autoclicker
-from insanity_clicker import InstanityClickerApp
+from insanity_clicker import InsanityClickerApp
 
 
 logger = logging.getLogger('main')
 
 
 async def main():
-    app = InstanityClickerApp.create()
-    clicker = Autoclicker(app)
-
-    await clicker.start()
+    app = InsanityClickerApp.create()
+    clicker = Runner(app)
 
     shutdown = ExitSignalHandler()
-    while not shutdown.triggered and await clicker.beat():
-        await asyncio.sleep(1)
-
-    await clicker.stop()
-
-    return True
+    await clicker.run(shutdown)
 
 
 if __name__ == '__main__':

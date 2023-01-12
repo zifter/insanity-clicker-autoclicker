@@ -1,5 +1,11 @@
 import abc
 from pathlib import Path
+from typing import List
+
+
+class Point:
+    x: int
+    y: int
 
 
 class GUIBase:
@@ -11,15 +17,19 @@ class GUIBase:
         pass
 
     @abc.abstractmethod
-    async def locate_on_screen(self, image_path: Path):
+    async def locate_on_screen(self, image_path: Path) -> List[Point]:
         pass
 
     @abc.abstractmethod
-    async def click(self, x: int, y: int):
+    async def click(self, p: Point):
         pass
 
     @abc.abstractmethod
-    async def move(self, x: int, y: int):
+    async def move_to(self, p: Point):
+        pass
+
+    @abc.abstractmethod
+    async def position(self) -> Point:
         pass
 
     @abc.abstractmethod
