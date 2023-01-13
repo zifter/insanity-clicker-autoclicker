@@ -19,8 +19,9 @@ class PyAutoGUIImpl(GUIBase):
         logger.info('Press key %s', key_name)
         pyautogui.press(key_name)
 
-    async def locate_on_screen(self, image_path: Path) -> List[Point]:
-        return [pyautogui.center(p) for p in pyautogui.locateAllOnScreen(str(image_path), step=5, confidence=0.9)]
+    async def locate_on_screen(self, image_path: Path, confidence) -> List[Point]:
+        img = str(image_path)
+        return [pyautogui.center(p) for p in pyautogui.locateAllOnScreen(img, step=1, confidence=confidence)]
 
     async def click(self, p: Point):
         pyautogui.click(p.x, p.y)

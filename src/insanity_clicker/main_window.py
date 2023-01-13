@@ -28,9 +28,9 @@ class WindowBase:
 
         self.stats.clicks += 1
 
-    async def _try_find_and_click_on_button(self, button_image_name: str) -> bool:
+    async def _try_find_and_click_on_button(self, button_image_name: str, confidence=0.95) -> bool:
         async with restore_position(self.gui):
-            positions = await self.gui.locate_on_screen(get_res_path() / button_image_name)
+            positions = await self.gui.locate_on_screen(get_res_path() / button_image_name, confidence)
             if positions:
                 p = positions[0]
                 await self.gui.click(p)
@@ -38,9 +38,9 @@ class WindowBase:
 
         return False
 
-    async def _find_and_click_on_all_buttons(self, button_image_name, sort=sorted) -> int:
+    async def _find_and_click_on_all_buttons(self, button_image_name, confidence=0.95, sort=sorted) -> int:
         async with restore_position(self.gui):
-            positions = await self.gui.locate_on_screen(get_res_path() / button_image_name)
+            positions = await self.gui.locate_on_screen(get_res_path() / button_image_name, confidence)
             positions = sort(positions)
             for p in positions:
                 await self._click(p)

@@ -16,7 +16,7 @@ class GUIBase:
         pass
 
     @abc.abstractmethod
-    async def locate_on_screen(self, image_path: Path) -> List[Point]:
+    async def locate_on_screen(self, image_path: Path, confidence) -> List[Point]:
         pass
 
     @abc.abstractmethod
