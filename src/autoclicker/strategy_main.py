@@ -1,26 +1,30 @@
+import asyncio
 from datetime import timedelta, datetime
 
-from insanity_clicker.main_window import MainWindow
+from gui.base import Point
+from insanity_clicker.window_main import MainWindow
 from .crontask import CronTask
 from .logger import logger
 from insanity_clicker import InsanityClickerApp
+from .strategy_base import StrategyBase
 
 
-class BaseStrategy:
-    def __init__(self, app: InsanityClickerApp):
-        self.app: InsanityClickerApp = app
+class ClickTarget:
+    def __init__(self):
+        self.default_target: Point | None = None
+        self.stack = []
 
-    async def start(self):
-        pass
+    def pop(self):
+        if self.stack:
+            return self.stack.pop()
 
-    async def stop(self):
-        pass
+        return self.default_target
 
-    async def beat(self) -> bool:
-        return False
+    def push(self, p):
+        self.stack.append(p)
 
 
-class MainStrategy(BaseStrategy):
+class StrategyMain(StrategyBase):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -32,26 +36,48 @@ class MainStrategy(BaseStrategy):
 
         self.main_window: MainWindow | None = None
 
+        self.click_target = ClickTarget()
+
     async def start(self):
         logger.info('Start insanity clicker auto clicker!')
 
         self.main_window = self.app.switch_to_main_window()
 
         await self.main_window.turn_on_automatic_progress()
+        self.main_window.click_impl = self.click_impl_override
+        self.click_target.default_target = await self.main_window.center_of_monster()
 
         now = datetime.now()
         for task in self.tasks:
             task.schedule(now)
 
-    async def stop(self):
+    async def on_stop(self):
         pass
 
-    async def beat(self) -> bool:
-        now = datetime.now()
-        for task in self.tasks:
-            await task.try_trigger(now)
-
+    async def run(self, shutdown) -> bool:
+        await asyncio.gather(
+            self._tick_cron_tasks(shutdown),
+            self._run_fixed_click_rate(shutdown),
+        )
         return True
+
+    async def click_impl_override(self, p: Point):
+        self.click_target.push(p)
+
+    async def _tick_cron_tasks(self, shutdown):
+        while not shutdown.triggered:
+            now = datetime.now()
+            for task in self.tasks:
+                await task.try_trigger(now)
+
+            await asyncio.sleep(1)
+
+    async def _run_fixed_click_rate(self, shutdown):
+        while not shutdown.triggered:
+            p = self.click_target.pop()
+            if p:
+                await self.app.gui.click(p)
+            await asyncio.sleep(0.1)
 
     async def trigger_perks_in_order(self):
         logger.debug('trigger perks')

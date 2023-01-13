@@ -1,24 +1,22 @@
-import asyncio
 import logging
 
 from autoclicker.logger import logger
-from autoclicker.strategy import MainStrategy, BaseStrategy
+from autoclicker.strategy_main import StrategyMain, StrategyBase
 from insanity_clicker import InsanityClickerApp
 
 
 class Runner:
     def __init__(self, app: InsanityClickerApp):
         self.app: InsanityClickerApp = app
-        self.active_strategy: BaseStrategy | None = None
+        self.active_strategy: StrategyBase | None = None
 
     async def run(self, shutdown):
         logging.info('Start insanity clicker auto clicker!')
 
-        self.active_strategy = MainStrategy(self.app)
+        self.active_strategy = StrategyMain(self.app)
         await self.active_strategy.start()
-        while not shutdown.triggered and await self.active_strategy.beat():
-            await asyncio.sleep(1)
-        await self.active_strategy.stop()
+        await self.active_strategy.run(shutdown)
+        await self.active_strategy.on_stop()
 
         logger.info('Finished clicker')
 

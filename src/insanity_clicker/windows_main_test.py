@@ -4,7 +4,7 @@ from gui import GUIBase
 from unittest.mock import AsyncMock, call
 
 from gui.base import Point
-from insanity_clicker.main_window import MainWindow
+from insanity_clicker.window_main import MainWindow
 from insanity_clicker.stats import Stats
 
 

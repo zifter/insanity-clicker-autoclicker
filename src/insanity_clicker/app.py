@@ -2,7 +2,7 @@ from enum import Enum
 
 import gui
 from gui.base import GUIBase
-from .main_window import MainWindow
+from .window_main import MainWindow
 from .stats import Stats
 
 
