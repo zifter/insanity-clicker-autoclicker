@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "01e7a5df0c123c8d5f9beff05d4a4fe5b3af198111a3a7aa23848008a54ab2b3"
+            "sha256": "fb725ab22683acb02fbfcf9606e9c4884e10906f39b43ab5059445a677a4061d"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -26,11 +26,19 @@
         },
         "gracefull-shutdown-py": {
             "hashes": [
-                "sha256:36919c91d545e509d24e6f53e0f9dc839d76b97ec13f68f32e0ff5293fc538c4",
-                "sha256:66674ea304b998bfd0bc2544872625e136fe546e404d93690b1e9072c2f61d89"
+                "sha256:410f90643d772f6414369b88e3d27fc17571dc4072e015df537f66c9e964d1eb",
+                "sha256:e3573fd849d079b00f1689414730ad2a16e797e1a53bce5eb5db1bc6351245e7"
             ],
             "index": "pypi",
-            "version": "==v0.1.0"
+            "version": "==v0.2.1"
+        },
+        "keyboard": {
+            "hashes": [
+                "sha256:63ed83305955939ca5c9a73755e5cc43e8242263f5ad5fd3bb7e0b032f3d308b",
+                "sha256:8e9c2422f1217e0bd84489b9ecd361027cc78415828f4fe4f88dd4acd587947b"
+            ],
+            "index": "pypi",
+            "version": "==0.13.5"
         },
         "mouseinfo": {
             "hashes": [
@@ -69,7 +77,7 @@
                 "sha256:ef85cf1f693c88c1fd229ccd1055570cb41cdf4875873b7728b6301f12cd05bf",
                 "sha256:f1b739841821968798947d3afcefd386fa56da0caf97722a5de53e07c4ccedc7"
             ],
-            "markers": "python_version >= '3.10'",
+            "markers": "python_version >= '3.7'",
             "version": "==1.24.1"
         },
         "opencv-python": {

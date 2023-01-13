@@ -1,9 +1,11 @@
 import logging
 from logging.config import fileConfig
+from pathlib import Path
 
-fileConfig('logging.ini')
+fileConfig(Path(__file__).parent / 'logging.ini')
 
 import asyncio
+import keyboard
 from gracefull_shutdown import ExitSignalHandler
 from autoclicker import Runner
 from insanity_clicker import InsanityClickerApp
@@ -17,6 +19,10 @@ async def main():
     clicker = Runner(app)
 
     shutdown = ExitSignalHandler()
+    try:
+        keyboard.on_press_key("esc", lambda _: shutdown.trigger())
+    except:
+        logger.error('failed to install esc hook')
     await clicker.run(shutdown)
 
 
