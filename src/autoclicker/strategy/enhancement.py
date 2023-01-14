@@ -14,10 +14,10 @@ class EnhancementStateMachine:
         level_up_img = await self.main_window.load_image('btn_level_up.png')
         hire_img = await self.main_window.load_image('btn_hire.png')
         level_up_pos = await self.main_window.gui.locate_all(level_up_img, screenshot)
-        level_up_pos = sorted(level_up_pos, key=lambda v: v.y)
+        level_up_pos = sorted(level_up_pos, key=lambda v: v.y, reverse=True)
 
         hire_pos = await self.main_window.gui.locate_all(hire_img, screenshot)
-        hire_pos = sorted(hire_pos, key=lambda v: v.y)
+        hire_pos = sorted(hire_pos, key=lambda v: v.y, reverse=True)
 
         for p in hire_pos:
             logger.info('Click on hire')
@@ -30,6 +30,7 @@ class EnhancementStateMachine:
             await self.main_window.gui.key_down('ctrl')
             await asyncio.sleep(0.2)
             for p in level_up_pos:
+                await asyncio.sleep(0.02)
                 await self.main_window.click(p)
                 self.main_window.stats.level_ups += 1
 
