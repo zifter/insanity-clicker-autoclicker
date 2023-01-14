@@ -1,4 +1,3 @@
-from common import get_res_path
 from gui.base import Point
 
 from .logger import logger
@@ -10,7 +9,7 @@ class MainWindow(WindowBase):
         super().__init__(*args, **kwargs)
 
     async def center_of_monster(self) -> Point | None:
-        positions = await self.gui.locate_on_screen(get_res_path() / 'level_text.png', 0.95)
+        positions = self.locate_on_screen('level_text.png', confidence=0.95)
         if positions:
             p = positions[0]
             return Point(int(p.x), int(p.y)+400)
@@ -21,7 +20,7 @@ class MainWindow(WindowBase):
 
         self.stats.used_perks += 1
 
-        await self.gui.press_key(str(perk.value))
+        self.gui.press_key(str(perk.value))
 
     async def try_find_chest_and_click(self) -> bool:
         logger.debug('find chest')

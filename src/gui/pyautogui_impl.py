@@ -4,7 +4,7 @@ from typing import List
 
 import pyautogui
 
-from .base import GUIBase, Point
+from .base import GUIBase, Point, Image
 
 logger = logging.getLogger('pyautogui-impl')
 
@@ -13,27 +13,26 @@ class PyAutoGUIImpl(GUIBase):
     def __init__(self):
         super().__init__()
 
-        # pyautogui.FAILSAFE = False
+        pyautogui.FAILSAFE = False
 
-    async def press_key(self, key_name: str):
+    def press_key(self, key_name: str):
         logger.info('Press key %s', key_name)
         pyautogui.press(key_name)
 
-    async def locate_on_screen(self, image_path: Path, confidence) -> List[Point]:
-        img = str(image_path)
-        return [pyautogui.center(p) for p in pyautogui.locateAllOnScreen(img, step=1, confidence=confidence)]
+    def screenshot(self, image_path: Path | None) -> Image:
+        return pyautogui.screenshot(str(image_path))
 
-    async def click(self, p: Point):
+    def locate_all(self, image_to_find: Image.Image, screenshot: Image.Image, **kwargs) -> List[Point]:
+        return [pyautogui.center(p) for p in pyautogui.locateAll(image_to_find, screenshot, **kwargs)]
+
+    def click(self, p: Point):
         pyautogui.click(p.x, p.y)
 
-    async def position(self) -> Point:
+    def position(self) -> Point:
         return pyautogui.position()
 
-    async def move_to(self, p: Point):
+    def move_to(self, p: Point):
         pyautogui.moveTo(p.x, p.y)
-
-    async def move(self, p: Point):
-        pyautogui.move(p.x, p.y)
 
     def debug(self):
         logger.info('List of KEYBOARD')

@@ -61,7 +61,7 @@ class StrategyMain(StrategyBase):
         )
         return True
 
-    async def click_impl_override(self, p: Point):
+    def click_impl_override(self, p: Point):
         self.click_target.push(p)
 
     async def _tick_cron_tasks(self, shutdown):
@@ -76,7 +76,7 @@ class StrategyMain(StrategyBase):
         while not shutdown.triggered:
             p = self.click_target.pop()
             if p:
-                await self.app.gui.click(p)
+                self.app.gui.click(p)
             await asyncio.sleep(0.02)
 
     async def trigger_perks_in_order(self):

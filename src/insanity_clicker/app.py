@@ -1,6 +1,6 @@
 from enum import Enum
 
-import gui
+from gui import create_gui_impl
 from gui.base import GUIBase
 from .window_main import MainWindow
 from .stats import Stats
@@ -20,7 +20,7 @@ class InsanityClickerApp:
 
     @staticmethod
     def create():
-        return InsanityClickerApp(gui.create_gui_impl())
+        return InsanityClickerApp(create_gui_impl())
 
     def __init__(self, gui: GUIBase):
         self.gui: GUIBase = gui

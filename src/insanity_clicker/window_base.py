@@ -1,20 +1,12 @@
-from contextlib import asynccontextmanager
+from typing import List
 
-from common import get_res_path
+from PIL import Image
+
+from common import get_res_path, load_image
 from gui.base import Point, GUIBase
 
 from .logger import logger
 from .stats import Stats
-
-
-@asynccontextmanager
-async def restore_position(gui):
-    p = await gui.position()
-    try:
-        yield
-    finally:
-        pass
-        # await gui.move_to(p)
 
 
 class WindowBase:
@@ -22,31 +14,37 @@ class WindowBase:
         self.gui: GUIBase = gui
         self.stats: Stats = stats
 
-    async def click(self, p: Point):
+    def click(self, p: Point):
         logger.info('click on %s', p)
 
-        await self.click_impl(p)
+        self.click_impl(p)
 
         self.stats.clicks += 1
 
-    async def click_impl(self, p: Point):
-        await self.gui.click(p)
+    def click_impl(self, p: Point):
+        self.gui.click(p)
+
+    def load_image(self, image_path: str) -> Image.Image:
+        return load_image(get_res_path()/image_path)
+
+    def locate_on_screen(self, image_path: str, **kwargs) -> List[Point]:
+        screenshot = self.gui.screenshot(None)
+        img = self.load_image(image_path)
+        return self.gui.locate_all(img, screenshot, **kwargs)
 
     async def _try_find_and_click_on_button(self, button_image_name: str, confidence=0.95) -> bool:
-        async with restore_position(self.gui):
-            positions = await self.gui.locate_on_screen(get_res_path() / button_image_name, confidence)
-            if positions:
-                p = positions[0]
-                await self.gui.click(p)
-                return True
+        positions = self.locate_on_screen(button_image_name, confidence=confidence)
+        if positions:
+            p = positions[0]
+            self.gui.click(p)
+            return True
 
         return False
 
     async def _find_and_click_on_all_buttons(self, button_image_name, confidence=0.95, sort=sorted) -> int:
-        async with restore_position(self.gui):
-            positions = await self.gui.locate_on_screen(get_res_path() / button_image_name, confidence)
-            positions = sort(positions)
-            for p in positions:
-                await self.click(p)
+        positions = self.locate_on_screen(button_image_name, confidence=confidence)
+        positions = sort(positions)
+        for p in positions:
+            self.click(p)
 
         return len(positions)
