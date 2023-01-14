@@ -2,26 +2,13 @@ import asyncio
 from datetime import timedelta, datetime
 
 from gui.base import Point
-from insanity_clicker.window_main import MainWindow
-from .crontask import CronTask
-from .logger import logger
+from insanity_clicker.window.window_main import MainWindow
+from autoclicker.crontask import CronTask
+from autoclicker.logger import logger
 from insanity_clicker import InsanityClickerApp
-from .strategy_base import StrategyBase
-
-
-class ClickTarget:
-    def __init__(self):
-        self.default_target: Point | None = None
-        self.stack = []
-
-    def pop(self):
-        if self.stack:
-            return self.stack.pop()
-
-        return self.default_target
-
-    def push(self, p):
-        self.stack.append(p)
+from .base import StrategyBase
+from .enhancement import EnhancementStateMachine
+from .utils import ClickTarget
 
 
 class StrategyMain(StrategyBase):
@@ -31,10 +18,11 @@ class StrategyMain(StrategyBase):
         self.tasks = [
             CronTask(timedelta(minutes=2, seconds=35), self.trigger_perks_in_order),
             CronTask(timedelta(seconds=30), self.try_find_and_open_chest),
-            CronTask(timedelta(seconds=5), self.try_level_up),
+            CronTask(timedelta(seconds=5), self.enhance_monster),
         ]
 
         self.main_window: MainWindow | None = None
+        self.enhancement: EnhancementStateMachine | None = None
 
         self.click_target = ClickTarget()
 
@@ -42,9 +30,9 @@ class StrategyMain(StrategyBase):
         logger.info('Start insanity clicker auto clicker!')
 
         self.main_window = self.app.switch_to_main_window()
+        self.enhancement = EnhancementStateMachine(self.main_window)
 
         await self.main_window.turn_on_automatic_progress()
-        self.main_window.click_impl = self.click_impl_override
         self.click_target.default_target = await self.main_window.center_of_monster()
 
         now = datetime.now()
@@ -76,8 +64,11 @@ class StrategyMain(StrategyBase):
         while not shutdown.triggered:
             p = self.click_target.pop()
             if p:
-                self.app.gui.click(p)
+                await self.app.gui.click(p)
             await asyncio.sleep(0.02)
+
+    async def enhance_monster(self):
+        await self.enhancement.enhance()
 
     async def trigger_perks_in_order(self):
         logger.debug('trigger perks')
@@ -100,8 +91,3 @@ class StrategyMain(StrategyBase):
         logger.debug('try_find_and_open_chest')
 
         await self.main_window.try_find_chest_and_click()
-
-    async def try_level_up(self):
-        logger.debug('try click level up')
-
-        await self.main_window.click_level_up()

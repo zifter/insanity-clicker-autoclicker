@@ -1,7 +1,7 @@
 import logging
 
 from autoclicker.logger import logger
-from autoclicker.strategy_main import StrategyMain, StrategyBase
+from autoclicker.strategy.strategy_main import StrategyMain, StrategyBase
 from insanity_clicker import InsanityClickerApp
 
 

@@ -1,6 +1,6 @@
 from gui.base import Point
 
-from .logger import logger
+from insanity_clicker.logger import logger
 from .window_base import WindowBase
 
 
@@ -9,7 +9,7 @@ class MainWindow(WindowBase):
         super().__init__(*args, **kwargs)
 
     async def center_of_monster(self) -> Point | None:
-        positions = self.locate_on_screen('level_text.png', confidence=0.95)
+        positions = await self.locate_on_screen('level_text.png', confidence=0.95)
         if positions:
             p = positions[0]
             return Point(int(p.x), int(p.y)+400)
@@ -20,7 +20,7 @@ class MainWindow(WindowBase):
 
         self.stats.used_perks += 1
 
-        self.gui.press_key(str(perk.value))
+        await self.gui.press_key(str(perk.value))
 
     async def try_find_chest_and_click(self) -> bool:
         logger.debug('find chest')
@@ -39,11 +39,6 @@ class MainWindow(WindowBase):
             return True
 
         return False
-
-    async def click_level_up(self):
-        logger.info('click level up')
-        sort = lambda l: sorted(l, key=lambda v: v.x)
-        self.stats.level_ups += await self._find_and_click_on_all_buttons('btn_level_up.png', sort=sort)
 
     async def monster_scroll_up(self) -> bool:
         logger.info('scroll up level')

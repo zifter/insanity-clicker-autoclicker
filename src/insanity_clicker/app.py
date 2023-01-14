@@ -2,7 +2,7 @@ from enum import Enum
 
 from gui import create_gui_impl
 from gui.base import GUIBase
-from .window_main import MainWindow
+from insanity_clicker.window.window_main import MainWindow
 from .stats import Stats
 
 
