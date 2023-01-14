@@ -13,7 +13,7 @@ class MainWindow(WindowBase):
         positions = await self.gui.locate_on_screen(get_res_path() / 'level_text.png', 0.95)
         if positions:
             p = positions[0]
-            return Point(int(p.x), int(p.y)+100)
+            return Point(int(p.x), int(p.y)+400)
         return None
 
     async def use_perk(self, perk):

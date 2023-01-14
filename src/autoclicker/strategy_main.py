@@ -77,7 +77,7 @@ class StrategyMain(StrategyBase):
             p = self.click_target.pop()
             if p:
                 await self.app.gui.click(p)
-            await asyncio.sleep(0.1)
+            await asyncio.sleep(0.02)
 
     async def trigger_perks_in_order(self):
         logger.debug('trigger perks')

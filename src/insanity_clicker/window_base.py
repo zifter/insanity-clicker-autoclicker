@@ -13,7 +13,8 @@ async def restore_position(gui):
     try:
         yield
     finally:
-        await gui.move_to(p)
+        pass
+        # await gui.move_to(p)
 
 
 class WindowBase:
