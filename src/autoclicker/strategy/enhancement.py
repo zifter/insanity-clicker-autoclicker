@@ -157,6 +157,7 @@ class EnhancementStateMachine:
         if 'switch_to_buy_perk_counter' in meta:
             counter = meta['switch_to_buy_perk_counter']
             if counter == 0:
+                del next_state_data.meta['switch_to_buy_perk_counter']
                 next_state_data = StateData(
                     EnhancementStateMachine.State.BUY_PERK,
                     next_state_data=StateData(EnhancementStateMachine.State.SCROLL_DOWN, next_state_data=next_state_data)
