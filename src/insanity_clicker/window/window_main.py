@@ -40,6 +40,24 @@ class MainWindow(WindowBase):
 
         return False
 
+    async def amnesia(self) -> bool:
+        logger.info('!!! Amnesia !!!')
+
+        if await self._try_find_and_click_on_button('btn_amnesia.png'):
+            logger.debug('amnesia is pressed')
+
+            return await self.press_dialog_button_yes()
+
+        return False
+
+    async def press_dialog_button_yes(self) -> bool:
+        logger.info('Press dialog button YES')
+
+        if await self._try_find_and_click_on_button('btn_dialog_yes.png'):
+            return True
+
+        return False
+
     async def monster_scroll_up(self) -> bool:
         logger.info('scroll up level')
 

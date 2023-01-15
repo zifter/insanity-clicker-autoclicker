@@ -5,6 +5,7 @@ class Stats:
         self.level_ups = 0
         self.used_perks = 0
         self.clicks = 0
+        self.keys = 0
         self.hired = 0
 
     def __str__(self):

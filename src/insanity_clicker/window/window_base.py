@@ -17,12 +17,30 @@ class WindowBase:
     async def click(self, p: Point):
         logger.info('click on %s', p)
 
-        await self.click_impl(p)
+        await self.gui.click(p)
 
         self.stats.clicks += 1
 
-    async def click_impl(self, p: Point):
-        await self.gui.click(p)
+    async def ctrl_down(self):
+        await self.key_action('ctrl', 'down')
+
+    async def ctrl_up(self):
+        await self.key_action('ctrl', 'up')
+
+    async def key_action(self, key_name: str, action: str):
+        logger.info('%s %s', key_name, action)
+
+        if action == 'up':
+            await self.gui.key_up(key_name)
+        elif action == 'down':
+            await self.gui.key_down(key_name)
+        else:
+            assert False, action
+
+        self.stats.keys += 1
+
+    async def key_up(self, key_name: str):
+        await self.gui.key_up(key_name)
 
     async def load_image(self, image_path: str) -> Image.Image:
         return load_image(get_res_path()/image_path)
@@ -36,7 +54,7 @@ class WindowBase:
         positions = await self.locate_on_screen(button_image_name, confidence=confidence)
         if positions:
             p = positions[0]
-            await self.gui.click(p)
+            await self.click(p)
             return True
 
         return False
