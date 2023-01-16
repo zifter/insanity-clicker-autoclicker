@@ -88,9 +88,9 @@ class StrategyEnhancement(StrategyBase):
             await asyncio.sleep(0.1)
 
         task = ScheduledTask(
-            timedelta(seconds=5),
+            timedelta(seconds=30),
             self.trigger_broken_jaw,
-            initial_offset=timedelta(seconds=5),
+            initial_offset=timedelta(seconds=30),
             single_shot=True)
         task.schedule(datetime.datetime.now())
         self.add_task(task)
