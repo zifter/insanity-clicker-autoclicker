@@ -103,13 +103,22 @@ class EnhancementStateMachine:
 
         screenshot = await self.main_window.gui.screenshot(None)
         monster_lvl_img = await self.main_window.load_image('part_monster_lvl.png')
+        perk_amnesia_img = await self.main_window.load_image('part_perk_amnesia.png')
+
+        perk_amnesia_pos = await self.main_window.gui.locate_all(perk_amnesia_img, screenshot)
+        ignore_pos = None
+        if perk_amnesia_pos:
+            ignore_pos = perk_amnesia_pos[0]
 
         lvl_pos = await self.main_window.gui.locate_all(monster_lvl_img, screenshot)
         for pos in lvl_pos:
             first_perk_pos = Point(int(pos.x) - 100, int(pos.y) + 28)
             for i in range(7):
-                # TODO Ignore amensia
                 p = Point(first_perk_pos.x + i*38, first_perk_pos.y)
+                if ignore_pos and p.is_near(ignore_pos):
+                    logger.warning('Ignore amnesia perk')
+                    continue
+
                 await self.main_window.click(p)
 
         return await self.wait_and_move_to(2, meta.next_state_data)
