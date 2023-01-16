@@ -5,7 +5,14 @@ from typing import List
 
 from PIL import Image
 
-Point = namedtuple('Point', ['x', 'y'])
+
+class Point:
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+
+    def is_near(self, p, deviation=10) -> bool:
+        return abs(self.x - p.x) < deviation and abs(self.y - p.y) < deviation
 
 
 class GUIBase:

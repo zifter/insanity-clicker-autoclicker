@@ -14,9 +14,7 @@ class Runner:
         logging.info('Start insanity clicker auto clicker!')
 
         self.active_strategy = StrategyMain(self.app)
-        await self.active_strategy.start()
         await self.active_strategy.run(shutdown)
-        await self.active_strategy.on_stop()
 
         logger.info('Finished clicker')
 

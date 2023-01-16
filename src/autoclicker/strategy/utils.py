@@ -1,4 +1,3 @@
-from gui.base import Point
 from collections import deque
 
 

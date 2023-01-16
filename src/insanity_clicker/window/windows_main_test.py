@@ -8,21 +8,41 @@ from insanity_clicker.window.window_main import MainWindow
 from insanity_clicker.stats import Stats
 
 
+# @pytest.mark.asyncio
+# async def test_level_up_points_are_sorted():
+#     stats = Stats()
+#
+#     pos = [
+#         Point(1, 1), Point(25, 25), Point(5, 5),
+#     ]
+#     gui = GUIBase()
+#     gui.click = AsyncMock()
+#     gui.locate_on_screen = AsyncMock(return_value=pos)
+#
+#     mw = MainWindow(gui, stats)
+#     await mw.()
+#
+#     calls = [
+#         call(pos[1]), call(pos[2]), call(pos[0])
+#     ]
+#     gui.click.assert_has_calls(calls, any_order=True)
+
+
 @pytest.mark.asyncio
-async def test_level_up_points_are_sorted():
+async def test_turn_on_auto_progress():
     stats = Stats()
 
     pos = [
-        Point(1, 1), Point(25, 25), Point(5, 5),
+        Point(25, 25)
     ]
     gui = GUIBase()
     gui.click = AsyncMock()
-    gui.locate_on_screen = AsyncMock(return_value=pos)
+    gui.locate_all = AsyncMock(return_value=pos)
 
     mw = MainWindow(gui, stats)
-    await mw.click_level_up()
+    await mw.turn_on_automatic_progress()
 
     calls = [
-        call(pos[1]), call(pos[2]), call(pos[0])
+        call(pos[0]),
     ]
     gui.click.assert_has_calls(calls, any_order=True)

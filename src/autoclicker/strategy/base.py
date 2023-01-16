@@ -1,15 +1,41 @@
+import asyncio
+from datetime import datetime
+from typing import List
+
+from autoclicker.crontask import CronTask
 from insanity_clicker import InsanityClickerApp
 
 
 class StrategyBase:
     def __init__(self, app: InsanityClickerApp):
         self.app: InsanityClickerApp = app
+        self.tasks: List[CronTask] = []
 
-    async def start(self):
+    async def on_start(self):
+        pass
+
+    async def run_impl(self, shutdown):
         pass
 
     async def on_stop(self):
         pass
 
-    async def run(self, shutdown) -> bool:
-        return False
+    async def run(self, shutdown):
+        now = datetime.now()
+        for task in self.tasks:
+            task.schedule(now)
+
+        await self.on_start()
+        await asyncio.gather(
+            self._tick_cron_tasks(shutdown),
+            self.run_impl(shutdown),
+        )
+        await self.on_stop()
+
+    async def _tick_cron_tasks(self, shutdown):
+        while not shutdown.triggered:
+            now = datetime.now()
+            for task in self.tasks:
+                await task.try_trigger(now)
+
+            await asyncio.sleep(1)
