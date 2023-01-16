@@ -39,8 +39,8 @@ class StrategyEnhancement(StrategyBase):
         self.main_window.click = self.click_override
         self.main_window.key_action = self.key_action_override
 
-    async def run_impl(self, shutdown):
-        await self._run_fixed_click_rate(shutdown)
+    async def run_impl(self):
+        await self._run_fixed_click_rate()
 
     async def click_override(self, *args):
         self.click_target.push_click(*args)
@@ -48,8 +48,8 @@ class StrategyEnhancement(StrategyBase):
     async def key_action_override(self, *args):
         self.click_target.push_key_action(*args)
 
-    async def _run_fixed_click_rate(self, shutdown):
-        while not shutdown.triggered:
+    async def _run_fixed_click_rate(self):
+        while not self._stop_requested:
             data = self.click_target.pop()
             if data is None:
                 if self.default_click_target:

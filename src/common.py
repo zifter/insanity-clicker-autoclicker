@@ -11,3 +11,4 @@ def get_res_path() -> Path:
 @cache
 def load_image(image_path: Path) -> Image.Image:
     return Image.open(image_path)
+

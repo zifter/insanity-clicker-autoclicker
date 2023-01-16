@@ -16,8 +16,11 @@ class CronTask:
         if self.initial_offset:
             self.next_trigger_time += self.initial_offset
 
+    def request_early_trigger(self):
+        self.next_trigger_time = datetime.min
+
     async def try_trigger(self, dt) -> bool:
-        if dt > self.next_trigger_time:
+        if dt >= self.next_trigger_time:
             self.next_trigger_time = self._get_next_trigger_time(dt)
             await self.on_trigger()
             return True

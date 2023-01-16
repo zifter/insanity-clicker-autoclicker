@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "378ef36bfa10b4cf51ba2043c24b6a7a2a459b4bda45b5ed4e477325ed21eec5"
+            "sha256": "2668f5141a52705d30864af9c22a4354c347b1e7d837dcdd55c067faa4ce263c"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -30,6 +30,14 @@
             ],
             "markers": "'linux' in sys_platform",
             "version": "==1.6.0"
+        },
+        "graceful-shutdown-py": {
+            "hashes": [
+                "sha256:52c7a19eebd40ca89b4010f320605cff1591a76db87c0e2df02678d016ffd1f3",
+                "sha256:fdce8d33b4e30c384208a79fa133268ac9c1396ca1adc3b447669b96034b93ea"
+            ],
+            "index": "pypi",
+            "version": "==v0.3.0"
         },
         "gracefull-shutdown-py": {
             "hashes": [
