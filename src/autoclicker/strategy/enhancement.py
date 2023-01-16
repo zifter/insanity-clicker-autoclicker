@@ -125,7 +125,7 @@ class EnhancementStateMachine:
         level_up_pos = await self.main_window.gui.locate_all(level_up_img, screenshot, confidence=0.95)
         level_up_pos = sorted(level_up_pos, key=lambda v: v.y, reverse=True)
 
-        hire_pos = await self.main_window.gui.locate_all(hire_img, screenshot, confidence=0.9)
+        hire_pos = await self.main_window.gui.locate_all(hire_img, screenshot, confidence=0.95)
         hire_pos = sorted(hire_pos, key=lambda v: v.y, reverse=True)
 
         next_state_data = StateData(EnhancementStateMachine.State.ENHANCE, **meta)
@@ -140,6 +140,7 @@ class EnhancementStateMachine:
             next_state_data.meta['hired'] = True
         else:
             if 'hired' in meta:
+                del next_state_data.meta['hired']
                 next_state_data.meta['switch_to_buy_perk_counter'] = 10
 
         if level_up_pos:
@@ -158,6 +159,7 @@ class EnhancementStateMachine:
             counter = meta['switch_to_buy_perk_counter']
             if counter == 0:
                 del next_state_data.meta['switch_to_buy_perk_counter']
+                wait_seconds = 10
                 next_state_data = StateData(
                     EnhancementStateMachine.State.BUY_PERK,
                     next_state_data=StateData(EnhancementStateMachine.State.SCROLL_DOWN, next_state_data=next_state_data)
