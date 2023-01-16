@@ -11,12 +11,9 @@ class StrategyWalkthrough(StrategyBase):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
+        delta = timedelta(hours=4, seconds=0)
         self.tasks: List[CronTask] = [
-            CronTask(
-                timedelta(hours=4),
-                self.trigger_amnesia,
-                initial_offset=timedelta(hours=4),
-            ),
+            CronTask(delta, self.trigger_amnesia, initial_offset=delta),
         ]
 
         self.active_strategy: StrategyBase | None = None

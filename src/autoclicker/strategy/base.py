@@ -20,6 +20,9 @@ class StrategyBase:
     async def on_stop(self):
         pass
 
+    async def beat(self):
+        pass
+
     async def run(self, shutdown):
         now = datetime.now()
         for task in self.tasks:
@@ -27,15 +30,16 @@ class StrategyBase:
 
         await self.on_start()
         await asyncio.gather(
-            self._tick_cron_tasks(shutdown),
+            self._beat_loop(shutdown),
             self.run_impl(shutdown),
         )
         await self.on_stop()
 
-    async def _tick_cron_tasks(self, shutdown):
+    async def _beat_loop(self, shutdown):
         while not shutdown.triggered:
             now = datetime.now()
             for task in self.tasks:
                 await task.try_trigger(now)
 
+            await self.beat()
             await asyncio.sleep(1)

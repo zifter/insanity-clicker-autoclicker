@@ -60,7 +60,7 @@ class StrategyEnhancement(StrategyBase):
                 await action(*args)
                 await asyncio.sleep(0.1)
 
-    async def enhance_monster(self):
+    async def beat(self):
         await self.enhancement.beat()
 
     async def try_to_find_bee(self):
