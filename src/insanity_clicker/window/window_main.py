@@ -48,12 +48,10 @@ class MainWindow(WindowBase):
         if await self._try_find_and_click_on_button('btn_amnesia.png'):
             logger.debug('amnesia is pressed')
 
-            for _ in range(5):
-                if await self.press_dialog_button_yes():
-                    self.stats.amnesia += 1
-                    return True
-
-                await asyncio.sleep(1)
+            await asyncio.sleep(1)
+            if await self.press_dialog_button_yes():
+                self.stats.amnesia += 1
+                return True
 
         return False
 
