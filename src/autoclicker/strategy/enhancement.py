@@ -1,62 +1,12 @@
-import asyncio
 from enum import Enum
 
 from autoclicker.logger import logger
+from autoclicker.state_machine import StateData, Meta, StateMachine
 from gui.base import Point
 from insanity_clicker.window.window_main import MainWindow
 
 
-class StateDescr:
-    def __init__(self, func, meta):
-        self.func = func
-        self.meta = meta
-
-
-class StateData:
-    def __init__(self, state, **kwargs):
-        self.state = state
-        self.meta = Meta(**kwargs)
-
-    def __str__(self):
-        return f'{self.state}[{self.meta}]'
-
-    def __repr__(self):
-        return f'{self.state}[{self.meta}]'
-
-
-class StateMachine:
-    def __init__(self, initial_state):
-        self.actual_state = initial_state
-        self.states = {}
-
-    def add_state(self, state, func):
-        self.states[state] = StateDescr(func, {})
-
-    async def process(self):
-        data = self.states[self.actual_state]
-
-        logger.debug('Process state: %s %s', self.actual_state, data.meta)
-        new_state_data = await data.func(data.meta)
-        if new_state_data is None:
-            return
-
-        if self.actual_state != new_state_data.state:
-            logger.debug('switch state %s -> %s', self.actual_state, new_state_data.state)
-
-        self.switch_to_new_state(new_state_data)
-
-    def switch_to_new_state(self, data: StateData):
-        self.actual_state = data.state
-        self.states[self.actual_state].meta = data.meta
-
-
-class Meta(dict):
-    @property
-    def next_state_data(self) -> StateData:
-        return self['next_state_data']
-
-
-class EnhancementStateMachine:
+class Enhancement:
     class State(Enum):
         WAIT = 0
         ENHANCE = 1
@@ -70,16 +20,16 @@ class EnhancementStateMachine:
 
         self.main_window: MainWindow = main_window
 
-        self.state_machine = StateMachine(EnhancementStateMachine.State.ENHANCE)
-        self.state_machine.add_state(EnhancementStateMachine.State.WAIT, self.state_wait)
-        self.state_machine.add_state(EnhancementStateMachine.State.ENHANCE, self.state_enhance)
-        self.state_machine.add_state(EnhancementStateMachine.State.BUY_PERK, self.state_buy_perk)
-        self.state_machine.add_state(EnhancementStateMachine.State.SCROLL_UP, self.state_scroll_up)
-        self.state_machine.add_state(EnhancementStateMachine.State.SCROLL_DOWN, self.state_scroll_down)
+        self.state_machine = StateMachine(Enhancement.State.ENHANCE)
+        self.state_machine.add_state(Enhancement.State.WAIT, self.state_wait)
+        self.state_machine.add_state(Enhancement.State.ENHANCE, self.state_enhance)
+        self.state_machine.add_state(Enhancement.State.BUY_PERK, self.state_buy_perk)
+        self.state_machine.add_state(Enhancement.State.SCROLL_UP, self.state_scroll_up)
+        self.state_machine.add_state(Enhancement.State.SCROLL_DOWN, self.state_scroll_down)
 
     async def wait_and_move_to(self, seconds, next_state_data: StateData):
         return StateData(
-            state=EnhancementStateMachine.State.WAIT,
+            state=Enhancement.State.WAIT,
             wait_seconds=seconds, next_state_data=next_state_data)
 
     async def state_wait(self, meta: Meta):
@@ -137,7 +87,7 @@ class EnhancementStateMachine:
         hire_pos = await self.main_window.gui.locate_all(hire_img, screenshot, confidence=0.9)
         hire_pos = sorted(hire_pos, key=lambda v: v.y, reverse=True)
 
-        next_state_data = StateData(EnhancementStateMachine.State.ENHANCE, **meta)
+        next_state_data = StateData(Enhancement.State.ENHANCE, **meta)
 
         wait_seconds = 10
         if hire_pos:
@@ -167,8 +117,8 @@ class EnhancementStateMachine:
             counter = meta['switch_to_buy_perk_counter']
             if counter == 0:
                 next_state_data = StateData(
-                    EnhancementStateMachine.State.BUY_PERK,
-                    next_state_data=StateData(EnhancementStateMachine.State.SCROLL_DOWN, next_state_data=next_state_data)
+                    Enhancement.State.BUY_PERK,
+                    next_state_data=StateData(Enhancement.State.SCROLL_DOWN, next_state_data=next_state_data)
                 )
             else:
                 next_state_data.meta['switch_to_buy_perk_counter'] = counter-1
