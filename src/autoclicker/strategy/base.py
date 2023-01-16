@@ -2,7 +2,7 @@ import asyncio
 from datetime import datetime
 from typing import List
 
-from autoclicker.crontask import CronTask
+from autoclicker.scheduledtask import ScheduledTask
 from autoclicker.logger import logger
 from insanity_clicker import InsanityClickerApp
 
@@ -10,9 +10,11 @@ from insanity_clicker import InsanityClickerApp
 class StrategyBase:
     def __init__(self, app: InsanityClickerApp):
         self.app: InsanityClickerApp = app
-        self.tasks: List[CronTask] = []
+        self.tasks: List[ScheduledTask] = []
         self._stop_requested: bool = False
-        self._child_strategies: List[StrategyBase] = []
+
+    def add_task(self, task: ScheduledTask):
+        self.tasks.append(task)
 
     async def on_start(self):
         pass
@@ -57,8 +59,11 @@ class StrategyBase:
     async def _cron_loop(self):
         while not self._stop_requested:
             now = datetime.now()
-            for task in self.tasks:
-                await task.try_trigger(now)
+            for task in self.tasks[:]:
+                if await task.try_trigger(now):
+                    if task.single_shot:
+                        self.tasks.remove(task)
+
             await asyncio.sleep(1)
 
     def __str__(self):

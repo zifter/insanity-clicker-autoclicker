@@ -4,7 +4,7 @@ from datetime import timedelta
 from enum import Enum
 from typing import List
 
-from autoclicker.crontask import CronTask
+from autoclicker.scheduledtask import ScheduledTask
 from autoclicker.logger import logger
 from .base import StrategyBase
 from .strategy_enhancement import StrategyEnhancement
@@ -21,8 +21,8 @@ class StrategyWalkthrough(StrategyBase):
         super().__init__(*args, **kwargs)
 
         delta = timedelta(hours=4, seconds=0)
-        self.tasks: List[CronTask] = [
-            CronTask(delta, self.trigger_amnesia, initial_offset=delta),
+        self.tasks: List[ScheduledTask] = [
+            ScheduledTask(delta, self.trigger_amnesia, initial_offset=delta),
         ]
 
         self.active_strategy: StrategyBase | None = None
@@ -64,5 +64,4 @@ class StrategyWalkthrough(StrategyBase):
     async def state_amnesia(self, meta: Meta):
         main_window = self.app.switch_to_main_window()
         await main_window.amnesia()
-
         return StateData(StrategyWalkthrough.State.SWITCH_TO_ENHANCEMENT)

@@ -1,10 +1,11 @@
 import asyncio
+import datetime
 from datetime import timedelta
 from typing import List
 
 from gui.base import Point
 from insanity_clicker.window.window_main import MainWindow
-from autoclicker.crontask import CronTask
+from autoclicker.scheduledtask import ScheduledTask
 from autoclicker.logger import logger
 from insanity_clicker import InsanityClickerApp
 from .base import StrategyBase
@@ -16,11 +17,11 @@ class StrategyEnhancement(StrategyBase):
     def __init__(self, main_window, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        self.tasks: List[CronTask] = [
-            CronTask(timedelta(minutes=2, seconds=35), self.trigger_perks, initial_offset=timedelta(seconds=5)),
-            CronTask(timedelta(minutes=10), self.trigger_hellish_ritual, initial_offset=timedelta(seconds=5)),
-            CronTask(timedelta(seconds=30), self.try_to_find_and_open_chest),
-            CronTask(timedelta(seconds=30), self.try_to_find_bee),
+        self.tasks: List[ScheduledTask] = [
+            ScheduledTask(timedelta(minutes=2, seconds=35), self.trigger_perks, initial_offset=timedelta(seconds=5)),
+            ScheduledTask(timedelta(minutes=10), self.trigger_hellish_ritual, initial_offset=timedelta(seconds=5)),
+            ScheduledTask(timedelta(seconds=30), self.try_to_find_and_open_chest),
+            ScheduledTask(timedelta(seconds=30), self.try_to_find_bee),
         ]
 
         self.main_window: MainWindow = main_window
@@ -75,15 +76,27 @@ class StrategyEnhancement(StrategyBase):
         for i in [
             InsanityClickerApp.PERK.FLURRY_OF_BLOWS_1,
             InsanityClickerApp.PERK.TITAN_STRENGTH_2,
-            InsanityClickerApp.PERK.WEAK_SPOT_3,
             InsanityClickerApp.PERK.TEETH_KNOCKER_4,
             InsanityClickerApp.PERK.BROKEN_JAWS_5,
             InsanityClickerApp.PERK.MAD_HATTERS_CLOCKS_9,
             InsanityClickerApp.PERK.LENS_OF_DARKNESS_8,
             InsanityClickerApp.PERK.INSANE_RAGE_7,
+            InsanityClickerApp.PERK.WEAK_SPOT_3,
             # InstanityClickerApp.Perk.BROKEN_JAWS_5,  # again, after 30 seconds
         ]:
             await self.main_window.use_perk(i)
+            await asyncio.sleep(0.1)
+
+        task = ScheduledTask(
+            timedelta(seconds=5),
+            self.trigger_broken_jaw,
+            initial_offset=timedelta(seconds=5),
+            single_shot=True)
+        task.schedule(datetime.datetime.now())
+        self.add_task(task)
+
+    async def trigger_broken_jaw(self):
+        await self.main_window.use_perk(InsanityClickerApp.PERK.BROKEN_JAWS_5)
 
     async def trigger_hellish_ritual(self):
         logger.debug('trigger hellish ritual')
