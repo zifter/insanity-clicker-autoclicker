@@ -11,7 +11,7 @@ class InsanityClickerApp:
         FLURRY_OF_BLOWS_1 = 1
         TITAN_STRENGTH_2 = 2
         WEAK_SPOT_3 = 3
-        TEETH_KNOCKER_5 = 4
+        TEETH_KNOCKER_4 = 4
         BROKEN_JAWS_5 = 5
         HELLISH_RITUAL_6 = 6
         INSANE_RAGE_7 = 7

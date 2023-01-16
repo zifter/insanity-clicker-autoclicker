@@ -1,5 +1,5 @@
 import asyncio
-from datetime import timedelta, datetime
+from datetime import timedelta
 from typing import List
 
 from gui.base import Point
@@ -12,28 +12,26 @@ from .enhancement import Enhancement
 from .utils import KeyboardActionStack
 
 
-class StrategyMain(StrategyBase):
-    def __init__(self, *args, **kwargs):
+class StrategyEnhancement(StrategyBase):
+    def __init__(self, main_window, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
         self.tasks: List[CronTask] = [
-            CronTask(timedelta(minutes=2, seconds=35), self.trigger_perks_in_order),
+            CronTask(timedelta(minutes=2, seconds=35), self.trigger_perks, initial_offset=timedelta(seconds=5)),
+            CronTask(timedelta(minutes=10), self.trigger_hellish_ritual, initial_offset=timedelta(seconds=5)),
             CronTask(timedelta(seconds=30), self.try_to_find_and_open_chest),
-            CronTask(timedelta(seconds=1), self.enhance_monster),
+            CronTask(timedelta(seconds=30), self.try_to_find_bee),
         ]
 
-        self.main_window: MainWindow | None = None
-        self.enhancement: Enhancement | None = None
+        self.main_window: MainWindow = main_window
+        self.enhancement: Enhancement = Enhancement(self.main_window)
+        self.click_target: KeyboardActionStack = KeyboardActionStack(self.main_window.click, self.main_window.key_action)
 
-        self.click_target: KeyboardActionStack | None = None
         self.default_click_target: Point | None = None
 
     async def on_start(self):
         logger.info('Start insanity clicker auto clicker!')
 
-        self.main_window = self.app.switch_to_main_window()
-        self.enhancement = Enhancement(self.main_window)
-        self.click_target = KeyboardActionStack(self.main_window.click, self.main_window.key_action)
         self.default_click_target = await self.main_window.center_of_monster()
 
         await self.main_window.turn_on_automatic_progress()
@@ -54,7 +52,8 @@ class StrategyMain(StrategyBase):
         while not shutdown.triggered:
             data = self.click_target.pop()
             if data is None:
-                await self.main_window.gui.click(self.default_click_target)
+                if self.default_click_target:
+                    await self.main_window.gui.click(self.default_click_target)
                 await asyncio.sleep(0.02)
             else:
                 action, args = data
@@ -64,7 +63,12 @@ class StrategyMain(StrategyBase):
     async def enhance_monster(self):
         await self.enhancement.beat()
 
-    async def trigger_perks_in_order(self):
+    async def try_to_find_bee(self):
+        # TODO
+        pass
+        # await self.enhancement.beat()
+
+    async def trigger_perks(self):
         logger.debug('trigger perks')
 
         # https://steamcommunity.com/sharedfiles/filedetails/?id=705525781
@@ -72,7 +76,7 @@ class StrategyMain(StrategyBase):
             InsanityClickerApp.PERK.FLURRY_OF_BLOWS_1,
             InsanityClickerApp.PERK.TITAN_STRENGTH_2,
             InsanityClickerApp.PERK.WEAK_SPOT_3,
-            InsanityClickerApp.PERK.TEETH_KNOCKER_5,
+            InsanityClickerApp.PERK.TEETH_KNOCKER_4,
             InsanityClickerApp.PERK.BROKEN_JAWS_5,
             InsanityClickerApp.PERK.MAD_HATTERS_CLOCKS_9,
             InsanityClickerApp.PERK.LENS_OF_DARKNESS_8,
@@ -80,6 +84,10 @@ class StrategyMain(StrategyBase):
             # InstanityClickerApp.Perk.BROKEN_JAWS_5,  # again, after 30 seconds
         ]:
             await self.main_window.use_perk(i)
+
+    async def trigger_hellish_ritual(self):
+        logger.debug('trigger hellish ritual')
+        await self.main_window.use_perk(InsanityClickerApp.PERK.HELLISH_RITUAL_6)
 
     async def try_to_find_and_open_chest(self):
         logger.debug('Try to find chest and open')
