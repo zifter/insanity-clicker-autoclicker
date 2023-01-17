@@ -1,5 +1,6 @@
 import asyncio
 
+from common import walkthrough_dir
 from gui.base import Point
 
 from insanity_clicker.logger import logger
@@ -43,15 +44,18 @@ class MainWindow(WindowBase):
         return False
 
     async def amnesia(self) -> bool:
-        logger.info('!!! Amnesia !!!')
+        logger.warning('!!! Amnesia !!!')
+
+        await self.gui.screenshot(walkthrough_dir() / 'amnesia.png')
 
         if await self._try_find_and_click_on_button('btn_amnesia.png'):
             logger.debug('amnesia is pressed')
 
-            await asyncio.sleep(1)
-            if await self.press_dialog_button_yes():
-                self.stats.amnesia += 1
-                return True
+            for _ in range(5):
+                await asyncio.sleep(1)
+                if await self.press_dialog_button_yes():
+                    self.stats.amnesia += 1
+                    return True
 
         return False
 

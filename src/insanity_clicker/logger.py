@@ -1,3 +1,3 @@
 import logging
 
-logger = logging.getLogger('insanity-clicker')
+logger = logging.getLogger('insanity-app')

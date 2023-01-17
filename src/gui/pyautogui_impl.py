@@ -1,12 +1,9 @@
-import logging
 from pathlib import Path
 from typing import List
 
 import pyautogui
 
-from .base import GUIBase, Point, Image
-
-logger = logging.getLogger('pyautogui-impl')
+from .base import GUIBase, Point, Image, logger
 
 
 class PyAutoGUIImpl(GUIBase):

@@ -1,9 +1,12 @@
 import abc
-from collections import namedtuple
+import logging
 from pathlib import Path
 from typing import List
 
 from PIL import Image
+
+
+logger = logging.getLogger('gui')
 
 
 class Point:
@@ -13,6 +16,9 @@ class Point:
 
     def is_near(self, p, deviation=10) -> bool:
         return abs(self.x - p.x) < deviation and abs(self.y - p.y) < deviation
+
+    def __str__(self):
+        return f'[{self.x},{self.y}]'
 
 
 class GUIBase:
