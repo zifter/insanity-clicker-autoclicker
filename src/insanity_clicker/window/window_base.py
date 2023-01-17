@@ -22,10 +22,10 @@ class WindowBase:
         self.stats.clicks += 1
 
     async def ctrl_down(self):
-        await self.key_action('ctrl', 'down')
+        await self.key_action('q', 'down')
 
     async def ctrl_up(self):
-        await self.key_action('ctrl', 'up')
+        await self.key_action('q', 'up')
 
     async def key_action(self, key_name: str, action: str):
         logger.info('%s %s', key_name, action)
