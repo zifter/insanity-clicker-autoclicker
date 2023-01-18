@@ -39,10 +39,6 @@ class StrategyBase:
         pass
 
     async def run(self):
-        now = datetime.now()
-        for task in self.tasks:
-            task.schedule(now)
-
         await self.on_start()
         await asyncio.gather(
             self._beat_loop(),

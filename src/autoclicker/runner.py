@@ -20,7 +20,13 @@ class Runner:
 
         await self.strategy.run()
 
-        logger.info('Autoclicker finished, stats:\n%s', self.app.stats)
+        logger.info('Autoclicker finished')
+
+        self.print_stats()
 
     def amnesia(self):
         self.strategy.request_amnesia()
+
+    def print_stats(self):
+        logger.info('Stats:\n%s', self.app.stats)
+

@@ -29,10 +29,17 @@ async def main():
             logger.warning("[!] Esc pressed")
 
             clicker.stop()
+
+        elif key == keyboard.Key.f2:
+            logger.warning("F3 pressed")
+
+            clicker.print_stats()
+
         elif key == keyboard.Key.f3:
             logger.warning("F3 pressed")
 
             clicker.amnesia()
+
 
     signal.signal(signal.SIGINT, exit_gracefully)
     signal.signal(signal.SIGTERM, exit_gracefully)

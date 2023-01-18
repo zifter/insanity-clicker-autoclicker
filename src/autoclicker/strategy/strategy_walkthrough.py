@@ -20,9 +20,9 @@ class StrategyWalkthrough(StrategyBase):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        delta = timedelta(hours=1, seconds=0)
+        delta = timedelta(hours=1)
         self.tasks: List[ScheduledTask] = [
-            ScheduledTask(delta, self.trigger_amnesia, initial_offset=delta),
+            ScheduledTask(delta, self.trigger_amnesia, offset=delta),
         ]
 
         self.active_strategy: StrategyBase | None = None

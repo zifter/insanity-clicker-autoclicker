@@ -17,8 +17,8 @@ class StrategyEnhancement(StrategyBase):
         super().__init__(*args, **kwargs)
 
         self.tasks: List[ScheduledTask] = [
-            ScheduledTask(timedelta(minutes=2, seconds=35), self.trigger_perks, initial_offset=timedelta(seconds=5)),
-            ScheduledTask(timedelta(minutes=10), self.trigger_hellish_ritual, initial_offset=timedelta(seconds=5)),
+            ScheduledTask(timedelta(minutes=2, seconds=35), self.trigger_perks, offset=timedelta(seconds=5)),
+            ScheduledTask(timedelta(minutes=10), self.trigger_hellish_ritual, offset=timedelta(seconds=5)),
             ScheduledTask(timedelta(seconds=30), self.try_to_find_bee_and_chest),
         ]
 
@@ -87,9 +87,8 @@ class StrategyEnhancement(StrategyBase):
         task = ScheduledTask(
             timedelta(seconds=30),
             self.trigger_broken_jaw,
-            initial_offset=timedelta(seconds=30),
+            offset=timedelta(seconds=30),
             single_shot=True)
-        task.schedule(datetime.datetime.now())
         self.add_task(task)
 
     async def trigger_broken_jaw(self):
@@ -122,7 +121,7 @@ class StrategyEnhancement(StrategyBase):
             task = ScheduledTask(
                 timedelta(seconds=5),
                 self.trigger_pop_default_click_target,
-                initial_offset=timedelta(seconds=5),
+                offset=timedelta(seconds=5),
                 single_shot=True)
             self.add_task(task)
 
