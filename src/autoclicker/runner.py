@@ -30,3 +30,5 @@ class Runner:
     def print_stats(self):
         logger.info('Stats:\n%s', self.app.stats)
 
+    def debug(self):
+        logger.info(f"\n{self.strategy.debug_string()}")

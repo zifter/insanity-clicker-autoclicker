@@ -50,6 +50,13 @@ class StrategyWalkthrough(StrategyBase):
         if self.active_strategy:
             self.active_strategy.request_stop()
 
+    def debug_string(self) -> str:
+        debug = super().debug_string()
+        debug += f'Active strategy - {self.active_strategy}\n'
+        debug += self.active_strategy.debug_string()
+
+        return debug
+
     async def state_switch_to_enhancement(self, meta: Meta):
         main_window = self.app.switch_to_main_window()
         self.active_strategy = StrategyEnhancement(main_window, self.app)

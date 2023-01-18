@@ -15,7 +15,6 @@ from insanity_clicker import InsanityClickerApp
 logger = logging.getLogger('main')
 
 
-
 async def main():
     clicker = Runner(InsanityClickerApp.create())
 
@@ -31,7 +30,7 @@ async def main():
             clicker.stop()
 
         elif key == keyboard.Key.f2:
-            logger.warning("F3 pressed")
+            logger.warning("F2 pressed")
 
             clicker.print_stats()
 
@@ -40,6 +39,10 @@ async def main():
 
             clicker.amnesia()
 
+        elif key == keyboard.Key.f4:
+            logger.warning("F4 pressed")
+
+            clicker.debug()
 
     signal.signal(signal.SIGINT, exit_gracefully)
     signal.signal(signal.SIGTERM, exit_gracefully)

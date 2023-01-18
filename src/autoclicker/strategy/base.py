@@ -28,6 +28,15 @@ class StrategyBase:
     async def beat(self):
         pass
 
+    def debug_string(self) -> str:
+        debug = f'Strategy {self}\n'
+        debug += f'Tasks\n'
+
+        for task in self.tasks:
+            debug += f'  {task}\n'
+
+        return debug
+
     def request_stop(self):
         logger.info('Stop requested for %s', self)
 

@@ -19,3 +19,6 @@ class ScheduledTask:
             return True
 
         return False
+
+    def __str__(self):
+        return f'{self.on_trigger.__name__} at {self.next_trigger_time}'
