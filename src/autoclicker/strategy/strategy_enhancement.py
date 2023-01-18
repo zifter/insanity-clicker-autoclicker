@@ -20,7 +20,7 @@ class StrategyEnhancement(StrategyBase):
         self.tasks: List[ScheduledTask] = [
             ScheduledTask(timedelta(minutes=2, seconds=35), self.trigger_perks, initial_offset=timedelta(seconds=5)),
             ScheduledTask(timedelta(minutes=10), self.trigger_hellish_ritual, initial_offset=timedelta(seconds=5)),
-            ScheduledTask(timedelta(seconds=30), self.try_to_find_and_open_chest),
+            ScheduledTask(timedelta(seconds=30), self.try_to_find_bee_and_chest),
             ScheduledTask(timedelta(seconds=30), self.try_to_find_bee),
         ]
 
@@ -28,12 +28,10 @@ class StrategyEnhancement(StrategyBase):
         self.enhancement: Enhancement = Enhancement(self.main_window)
         self.click_target: KeyboardActionStack = KeyboardActionStack(self.main_window.click, self.main_window.key_action)
 
-        self.default_click_target: Point | None = None
-
     async def on_start(self):
         logger.info('Start insanity clicker auto clicker!')
 
-        self.default_click_target = await self.main_window.center_of_monster()
+        self.click_target.push_default_target(await self.main_window.center_of_monster())
 
         await self.main_window.turn_on_automatic_progress()
 
@@ -52,14 +50,15 @@ class StrategyEnhancement(StrategyBase):
     async def _run_fixed_click_rate(self):
         while not self._stop_requested:
             data = self.click_target.pop()
-            if data is None:
-                if self.default_click_target:
-                    await self.main_window.gui.click(self.default_click_target)
-                await asyncio.sleep(0.02)
-            else:
+            if data:
                 action, args = data
                 await action(*args)
                 await asyncio.sleep(0.1)
+            else:
+                target = self.click_target.default_click_target
+                if target:
+                    await self.main_window.gui.click(target)
+                    await asyncio.sleep(0.02)
 
     async def beat(self):
         await self.enhancement.beat()
@@ -102,7 +101,32 @@ class StrategyEnhancement(StrategyBase):
         logger.debug('trigger hellish ritual')
         await self.main_window.use_perk(InsanityClickerApp.PERK.HELLISH_RITUAL_6)
 
-    async def try_to_find_and_open_chest(self):
+    async def try_to_find_bee_and_chest(self):
         logger.debug('Try to find chest and open')
 
-        await self.main_window.try_find_chest_and_click()
+        screenshot = await self.main_window.gui.screenshot(None)
+
+        chest_img = await self.main_window.load_image('chest_part.png')
+        bee_img = await self.main_window.load_image('part_bee.png')
+
+        chest_pos = await self.main_window.gui.locate_all(chest_img, screenshot, confidence=0.95)
+        if chest_pos:
+            logger.info('chest found')
+            self.main_window.stats.opened_chest += 1
+            await self.main_window.click(chest_pos[0])
+
+        bee_pos = await self.main_window.gui.locate_all(bee_img, screenshot, confidence=0.90)
+        if bee_pos:
+            logger.info('bee found')
+            self.main_window.stats.bee += 1
+            self.click_target.push_default_target(bee_pos[0])
+
+            task = ScheduledTask(
+                timedelta(seconds=5),
+                self.trigger_pop_default_click_target,
+                initial_offset=timedelta(seconds=5),
+                single_shot=True)
+            self.add_task(task)
+
+    async def trigger_pop_default_click_target(self):
+        self.click_target.pop_default_target()

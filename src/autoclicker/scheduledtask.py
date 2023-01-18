@@ -7,7 +7,7 @@ class ScheduledTask:
         self.initial_offset: datetime | None = initial_offset
         self.on_trigger = on_trigger
         self.next_trigger_time: datetime | None = None
-        self.single_shot: bool = False
+        self.single_shot: bool = single_shot
 
     def _get_next_trigger_time(self, dt) -> datetime:
         return dt + self.delta
