@@ -89,7 +89,7 @@ class Enhancement:
 
         next_state_data = StateData(Enhancement.State.ENHANCE, **meta)
 
-        wait_seconds = 10
+        wait_seconds = 8
         if hire_pos:
             wait_seconds = 1
             for p in hire_pos:
@@ -103,7 +103,7 @@ class Enhancement:
                 next_state_data.meta['switch_to_buy_perk_counter'] = 10
 
         if level_up_pos:
-            wait_seconds = 1
+            wait_seconds = 2
 
             logger.info('Click on level up with ctrl')
             await self.main_window.ctrl_down()
