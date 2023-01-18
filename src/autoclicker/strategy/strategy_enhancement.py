@@ -60,9 +60,8 @@ class StrategyEnhancement(StrategyBase):
                     await self.main_window.gui.click(target)
                     sleeptime = 0.05
 
-            sleeptime = sleeptime - elapsed.elapsed_seconds()
-            if sleeptime > 0:
-                await asyncio.sleep(sleeptime)
+            sleeptime = min(sleeptime - elapsed.elapsed_seconds(), 0)
+            await asyncio.sleep(sleeptime)
 
     async def beat(self):
         await self.enhancement.beat()

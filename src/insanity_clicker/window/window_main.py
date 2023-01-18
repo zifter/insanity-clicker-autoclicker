@@ -48,12 +48,12 @@ class MainWindow(WindowBase):
         logger.warning('!!!!!!!!!!!!!!!')
         logger.warning('!!! Amnesia !!!')
 
-        dt = format(datetime.datetime.now(), '%Y-%m-%d_%H:%M:%S')
-        filename = f'amnesia_{dt}.png'
+        dt = format(datetime.datetime.now(), '%m-%d_%H:%M')
+        filename = f'amnesia_{dt}_v.png'
         await self.gui.screenshot(walkthrough_dir() / filename)
 
         if await self._try_find_and_click_on_button('btn_amnesia.png'):
-            logger.infd('amnesia is invoked')
+            logger.info('amnesia is invoked')
 
             for _ in range(5):
                 await asyncio.sleep(1)
