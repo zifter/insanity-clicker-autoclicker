@@ -27,7 +27,7 @@ class MainWindow(WindowBase):
         await self.gui.press_key(str(perk.value))
 
     async def try_find_chest_and_click(self) -> bool:
-        logger.debug('find chest')
+        logger.info('find chest')
         if await self._try_find_and_click_on_button('chest_part.png'):
             self.stats.opened_chest += 1
             logger.debug('chest found')
@@ -45,6 +45,7 @@ class MainWindow(WindowBase):
         return False
 
     async def amnesia(self) -> bool:
+        logger.warning('!!!!!!!!!!!!!!!')
         logger.warning('!!! Amnesia !!!')
 
         dt = format(datetime.datetime.now(), '%Y-%m-%d_%H:%M:%S')
@@ -52,7 +53,7 @@ class MainWindow(WindowBase):
         await self.gui.screenshot(walkthrough_dir() / filename)
 
         if await self._try_find_and_click_on_button('btn_amnesia.png'):
-            logger.debug('amnesia is pressed')
+            logger.infd('amnesia is invoked')
 
             for _ in range(5):
                 await asyncio.sleep(1)
@@ -63,7 +64,7 @@ class MainWindow(WindowBase):
         return False
 
     async def press_dialog_button_yes(self) -> bool:
-        logger.info('Press dialog button YES')
+        logger.info('Press YES on dialog button')
 
         if await self._try_find_and_click_on_button('btn_dialog_yes.png'):
             return True
@@ -71,11 +72,11 @@ class MainWindow(WindowBase):
         return False
 
     async def monster_scroll_up(self) -> bool:
-        logger.info('scroll up level')
+        logger.info('scroll up monsters')
 
         return await self._try_find_and_click_on_button('btn_scroll_up.png')
 
     async def monster_scroll_down(self) -> bool:
-        logger.info('scroll up level')
+        logger.info('scroll down monsters')
 
         return await self._try_find_and_click_on_button('btn_scroll_down.png')

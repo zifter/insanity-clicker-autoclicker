@@ -33,7 +33,7 @@ class Enhancement:
             wait_seconds=seconds, next_state_data=next_state_data)
 
     async def state_wait(self, meta: Meta):
-        if meta['wait_seconds'] == 0:
+        if meta['wait_seconds'] <= 1:
             return meta.next_state_data
 
         meta['wait_seconds'] -= 1
@@ -75,7 +75,7 @@ class Enhancement:
         # return await self.wait_and_move_to(2, StateData(EnhancementStateMachine.State.BUY_PERK))
 
     async def state_enhance(self, meta: Meta):
-        logger.debug('try click level up or hire')
+        logger.info('try click level up or hire')
         screenshot = await self.main_window.gui.screenshot(None)
 
         hire_img = await self.main_window.load_image('btn_hire.png')
@@ -106,13 +106,13 @@ class Enhancement:
             wait_seconds = 2
 
             logger.info('Click on level up with ctrl')
-            await self.main_window.ctrl_down()
+            await self.main_window.q_down()
 
             for p in level_up_pos:
                 await self.main_window.click(p)
                 self.main_window.stats.level_ups += 1
 
-            await self.main_window.ctrl_up()
+            await self.main_window.q_up()
 
         if 'switch_to_buy_perk_counter' in meta:
             counter = meta['switch_to_buy_perk_counter']

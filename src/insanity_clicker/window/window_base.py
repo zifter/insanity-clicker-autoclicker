@@ -15,20 +15,20 @@ class WindowBase:
         self.stats: Stats = stats
 
     async def click(self, p: Point):
-        logger.info('click on %s', p)
+        logger.debug('click on %s', p)
 
         await self.gui.click(p)
 
         self.stats.clicks += 1
 
-    async def ctrl_down(self):
+    async def q_down(self):
         await self.key_action('q', 'down')
 
-    async def ctrl_up(self):
+    async def q_up(self):
         await self.key_action('q', 'up')
 
     async def key_action(self, key_name: str, action: str):
-        logger.info('%s %s', key_name, action)
+        logger.debug('%s %s', key_name, action)
 
         if action == 'up':
             await self.gui.key_up(key_name)
@@ -38,9 +38,6 @@ class WindowBase:
             assert False, action
 
         self.stats.keys += 1
-
-    async def key_up(self, key_name: str):
-        await self.gui.key_up(key_name)
 
     async def load_image(self, image_path: str) -> Image.Image:
         return load_image(get_res_path()/image_path)
@@ -58,11 +55,3 @@ class WindowBase:
             return True
 
         return False
-
-    async def _find_and_click_on_all_buttons(self, button_image_name, confidence=0.95, sort=sorted) -> int:
-        positions = await self.locate_on_screen(button_image_name, confidence=confidence)
-        positions = sort(positions)
-        for p in positions:
-            await self.click(p)
-
-        return len(positions)

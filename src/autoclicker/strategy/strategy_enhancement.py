@@ -68,7 +68,7 @@ class StrategyEnhancement(StrategyBase):
         await self.enhancement.beat()
 
     async def trigger_perks(self):
-        logger.debug('trigger perks')
+        logger.info('Trigger perks')
 
         # https://steamcommunity.com/sharedfiles/filedetails/?id=705525781
         for i in [
