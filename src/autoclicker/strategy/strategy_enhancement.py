@@ -3,14 +3,13 @@ import datetime
 from datetime import timedelta
 from typing import List
 
-from gui.base import Point
 from insanity_clicker.window.window_main import MainWindow
 from autoclicker.scheduledtask import ScheduledTask
 from autoclicker.logger import logger
 from insanity_clicker import InsanityClickerApp
 from .base import StrategyBase
 from .enhancement import Enhancement
-from .utils import KeyboardActionStack
+from .utils import KeyboardActionStack, ElapsedTime
 
 
 class StrategyEnhancement(StrategyBase):
@@ -21,7 +20,6 @@ class StrategyEnhancement(StrategyBase):
             ScheduledTask(timedelta(minutes=2, seconds=35), self.trigger_perks, initial_offset=timedelta(seconds=5)),
             ScheduledTask(timedelta(minutes=10), self.trigger_hellish_ritual, initial_offset=timedelta(seconds=5)),
             ScheduledTask(timedelta(seconds=30), self.try_to_find_bee_and_chest),
-            ScheduledTask(timedelta(seconds=30), self.try_to_find_bee),
         ]
 
         self.main_window: MainWindow = main_window
@@ -49,24 +47,25 @@ class StrategyEnhancement(StrategyBase):
 
     async def _run_fixed_click_rate(self):
         while not self._stop_requested:
+            elapsed = ElapsedTime()
+            sleeptime = 0.1
+
             data = self.click_target.pop()
             if data:
                 action, args = data
                 await action(*args)
-                await asyncio.sleep(0.1)
             else:
                 target = self.click_target.default_click_target
                 if target:
                     await self.main_window.gui.click(target)
-                    await asyncio.sleep(0.02)
+                    sleeptime = 0.05
+
+            sleeptime = sleeptime - elapsed.elapsed_seconds()
+            if sleeptime > 0:
+                await asyncio.sleep(sleeptime)
 
     async def beat(self):
         await self.enhancement.beat()
-
-    async def try_to_find_bee(self):
-        # TODO
-        pass
-        # await self.enhancement.beat()
 
     async def trigger_perks(self):
         logger.debug('trigger perks')

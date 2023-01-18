@@ -1,3 +1,4 @@
+import datetime
 from collections import deque
 from typing import List
 
@@ -33,3 +34,11 @@ class KeyboardActionStack:
 
     def push_key_action(self, *args):
         self.single_click_stack.append((self.key_action_impl, args))
+
+
+class ElapsedTime:
+    def __init__(self):
+        self.start = datetime.datetime.now()
+
+    def elapsed_seconds(self) -> float:
+        return (datetime.datetime.now() - self.start).total_seconds()
