@@ -47,7 +47,7 @@ class MainWindow(WindowBase):
     async def amnesia(self) -> bool:
         logger.warning('!!! Amnesia !!!')
 
-        await self.gui.screenshot(walkthrough_dir() / f'amnesia_{datetime.datetime.now()}.png')
+        await self.gui.screenshot(walkthrough_dir() / f'amnesia_{datetime.date.today()}.png')
 
         if await self._try_find_and_click_on_button('btn_amnesia.png'):
             logger.debug('amnesia is pressed')
