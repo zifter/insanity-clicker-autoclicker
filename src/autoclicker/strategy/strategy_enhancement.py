@@ -19,7 +19,7 @@ class StrategyEnhancement(StrategyBase):
         self.tasks: List[ScheduledTask] = [
             ScheduledTask(timedelta(minutes=2, seconds=35), self.trigger_perks, offset=timedelta(seconds=5)),
             ScheduledTask(timedelta(minutes=10), self.trigger_hellish_ritual, offset=timedelta(seconds=5)),
-            ScheduledTask(timedelta(seconds=30), self.try_to_find_bee_and_chest),
+            ScheduledTask(timedelta(seconds=30), self.trigger_try_to_find_bee_and_chest),
         ]
 
         self.main_window: MainWindow = main_window
@@ -98,7 +98,7 @@ class StrategyEnhancement(StrategyBase):
         logger.debug('trigger hellish ritual')
         await self.main_window.use_perk(InsanityClickerApp.PERK.HELLISH_RITUAL_6)
 
-    async def try_to_find_bee_and_chest(self):
+    async def trigger_try_to_find_bee_and_chest(self):
         logger.debug('Try to find chest and open')
 
         screenshot = await self.main_window.gui.screenshot(None)
