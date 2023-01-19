@@ -28,6 +28,7 @@ class StateDescr:
 
 class StateMachine:
     def __init__(self, initial_state):
+        self.deque= []
         self.actual_state = initial_state
         self.states = {}
         self.next_state: StateData | None = None

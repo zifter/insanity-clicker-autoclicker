@@ -1,6 +1,8 @@
+import datetime
 from enum import Enum
 
 from autoclicker.logger import logger
+from autoclicker.scheduledtask import SchedulePeriod
 from autoclicker.state_machine import StateData, Meta, StateMachine
 from gui.base import Point
 from insanity_clicker.window.window_main import MainWindow
@@ -14,6 +16,7 @@ class Enhancement:
         BUY_PERK = 2
         SCROLL_UP = 3
         SCROLL_DOWN = 4
+        LEVEL_UP_OLD = 6
 
     def __init__(self, main_window: MainWindow):
         super().__init__()
@@ -26,8 +29,12 @@ class Enhancement:
         self.state_machine.add_state(Enhancement.State.BUY_PERK, self.state_buy_perk)
         self.state_machine.add_state(Enhancement.State.SCROLL_UP, self.state_scroll_up)
         self.state_machine.add_state(Enhancement.State.SCROLL_DOWN, self.state_scroll_down)
+        self.state_machine.add_state(Enhancement.State.LEVEL_UP_OLD, self.state_level_up_old)
 
-    async def wait_and_move_to(self, seconds, next_state_data: StateData):
+        self.buy_perk_task: SchedulePeriod = SchedulePeriod(datetime.timedelta(minutes=5), offset=datetime.timedelta(seconds=25))
+        self.level_up_old_task: SchedulePeriod = SchedulePeriod(datetime.timedelta(minutes=1), offset=datetime.timedelta(seconds=45))
+
+    def wait_and_move_to(self, seconds, next_state_data: StateData):
         return StateData(
             state=Enhancement.State.WAIT,
             wait_seconds=seconds, next_state_data=next_state_data)
@@ -39,14 +46,18 @@ class Enhancement:
         meta['wait_seconds'] -= 1
 
     async def state_scroll_up(self, meta: Meta):
-        await self.main_window.monster_scroll_up()
+        clicks = meta.setdefault('clicks', 1)
+        for _ in range(clicks):
+            await self.main_window.monster_scroll_up()
 
-        return await self.wait_and_move_to(2, meta.next_state_data)
+        return self.wait_and_move_to(2, meta.next_state_data)
 
     async def state_scroll_down(self, meta: Meta):
-        await self.main_window.monster_scroll_down()
+        clicks = meta.setdefault('clicks', 1)
+        for _ in range(clicks):
+            await self.main_window.monster_scroll_down()
 
-        return await self.wait_and_move_to(2, meta.next_state_data)
+        return self.wait_and_move_to(2, meta.next_state_data)
 
     async def state_buy_perk(self, meta: Meta):
         logger.debug('buy perk')
@@ -67,12 +78,11 @@ class Enhancement:
                 p = Point(first_perk_pos.x + i*38, first_perk_pos.y)
                 if ignore_pos and p.is_near(ignore_pos):
                     logger.warning('Ignore amnesia perk')
-                    continue
+                    break
 
                 await self.main_window.click(p)
 
-        return await self.wait_and_move_to(2, meta.next_state_data)
-        # return await self.wait_and_move_to(2, StateData(EnhancementStateMachine.State.BUY_PERK))
+        return self.wait_and_move_to(2, meta.next_state_data)
 
     async def state_enhance(self, meta: Meta):
         logger.info('try click level up or hire')
@@ -87,8 +97,6 @@ class Enhancement:
         hire_pos = await self.main_window.gui.locate_all(hire_img, screenshot, confidence=0.95)
         hire_pos = sorted(hire_pos, key=lambda v: v.y, reverse=True)
 
-        next_state_data = StateData(Enhancement.State.ENHANCE, **meta)
-
         wait_seconds = 8
         if hire_pos:
             wait_seconds = 1
@@ -96,11 +104,8 @@ class Enhancement:
                 logger.info('Click on hire')
                 await self.main_window.click(p)
                 self.main_window.stats.hired += 1
-            next_state_data.meta['hired'] = True
-        else:
-            if 'hired' in meta:
-                del next_state_data.meta['hired']
-                next_state_data.meta['switch_to_buy_perk_counter'] = 10
+
+            self.buy_perk_task.reset()
 
         if level_up_pos:
             wait_seconds = 2
@@ -114,19 +119,51 @@ class Enhancement:
 
             await self.main_window.q_up()
 
-        if 'switch_to_buy_perk_counter' in meta:
-            counter = meta['switch_to_buy_perk_counter']
-            if counter == 0:
-                del next_state_data.meta['switch_to_buy_perk_counter']
-                wait_seconds = 10
-                next_state_data = StateData(
-                    Enhancement.State.BUY_PERK,
-                    next_state_data=StateData(Enhancement.State.SCROLL_DOWN, next_state_data=next_state_data)
-                )
-            else:
-                next_state_data.meta['switch_to_buy_perk_counter'] = counter-1
+            self.level_up_old_task.reset()
 
-        return await self.wait_and_move_to(wait_seconds, next_state_data)
+        dt = datetime.datetime.now()
+        if await self.buy_perk_task.try_trigger(dt):
+            return self.wait_and_move_to(10, StateData(
+                Enhancement.State.BUY_PERK,
+                next_state_data=StateData(
+                    Enhancement.State.SCROLL_DOWN,
+                    next_state_data=StateData(
+                        Enhancement.State.ENHANCE,
+                    ))))
+
+        if await self.level_up_old_task.try_trigger(dt):
+            return StateData(
+                        Enhancement.State.SCROLL_UP,
+                        clicks=4,
+                        next_state_data=StateData(Enhancement.State.LEVEL_UP_OLD)
+                    )
+
+        return self.wait_and_move_to(wait_seconds, StateData(Enhancement.State.ENHANCE))
+
+    async def state_level_up_old(self, meta: Meta):
+        logger.info('level up old')
+
+        screenshot = await self.main_window.gui.screenshot(None)
+        level_up_img = await self.main_window.load_image('btn_level_up.png')
+        level_up_pos = await self.main_window.gui.locate_all(level_up_img, screenshot, confidence=0.95)
+
+        if level_up_pos:
+            logger.info('Click on level up with ctrl')
+            await self.main_window.q_down()
+
+            for p in level_up_pos:
+                await self.main_window.click(p)
+                self.main_window.stats.level_ups += 1
+
+            await self.main_window.q_up()
+
+            self.global_state['last_level_up'] = datetime.datetime.now()
+
+        return StateData(
+            Enhancement.State.SCROLL_DOWN,
+            clicks=4,
+            next_state_data=StateData(Enhancement.State.ENHANCE)
+        )
 
     async def beat(self):
         await self.state_machine.process()
