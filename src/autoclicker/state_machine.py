@@ -1,5 +1,6 @@
-from autoclicker.logger import logger
+from enum import Enum
 
+from autoclicker.logger import logger
 
 
 class StateData:
@@ -27,11 +28,16 @@ class StateDescr:
 
 
 class StateMachine:
+    class State(Enum):
+        WAIT = 0
+
     def __init__(self, initial_state):
         self.deque= []
         self.actual_state = initial_state
         self.states = {}
         self.next_state: StateData | None = None
+
+        self.add_state(StateMachine.State.WAIT, self.state_wait)
 
     def add_state(self, state, func):
         self.states[state] = StateDescr(func, Meta())
@@ -61,3 +67,14 @@ class StateMachine:
 
     def request_next_state(self, state_data: StateData):
         self.next_state = state_data
+
+    def wait_and_move_to(self, seconds, next_state_data: StateData):
+        return StateData(
+            state=StateMachine.State.WAIT,
+            wait_seconds=seconds, next_state_data=next_state_data)
+
+    async def state_wait(self, meta: Meta):
+        if meta['wait_seconds'] <= 1:
+            return meta.next_state_data
+
+        meta['wait_seconds'] -= 1

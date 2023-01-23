@@ -7,10 +7,11 @@ name = 'pypi'
 python_version = '3.10.7'
 
 [packages]
-pyautogui = "0.9.53"
+pyautogui = "==0.9.53"
 opencv-python = "==4.7.0.68"
 Pillow = "==9.4.0"
-pynput = "*"
+pynput = "==1.7.6"
+psutil = "==5.9.4"
 
 [dev-packages]
 pytest='==7.2.0'

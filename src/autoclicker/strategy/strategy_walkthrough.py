@@ -13,10 +13,10 @@ from ..state_machine import StateMachine, Meta, StateData
 
 class StrategyWalkthrough(StrategyBase):
     class State(Enum):
-        LAUNCH_APP = 0
-        SWITCH_TO_ENHANCEMENT = 1
-        ENHANCEMENT = 2
-        AMNESIA = 3
+        LAUNCH_APP = 1
+        SWITCH_TO_ENHANCEMENT = 2
+        ENHANCEMENT = 3
+        AMNESIA = 4
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -66,7 +66,12 @@ class StrategyWalkthrough(StrategyBase):
         return debug
 
     async def state_launch_app(self, meta: Meta):
-        return StateData(StrategyWalkthrough.State.SWITCH_TO_ENHANCEMENT)
+        if self.app.is_launched():
+            return StateData(StrategyWalkthrough.State.SWITCH_TO_ENHANCEMENT)
+        else:
+            # TODO WAIT
+            self.app.launch('TODO')
+            return self.state_machine.wait_and_move_to(10, StateData(StrategyWalkthrough.State.SWITCH_TO_ENHANCEMENT))
 
     async def state_switch_to_enhancement(self, meta: Meta):
         main_window = self.app.switch_to_main_window()

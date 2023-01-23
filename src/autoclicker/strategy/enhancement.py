@@ -25,7 +25,6 @@ class Enhancement:
         self.main_window: MainWindow = main_window
 
         self.state_machine = StateMachine(Enhancement.State.ENHANCE)
-        self.state_machine.add_state(Enhancement.State.WAIT, self.state_wait)
         self.state_machine.add_state(Enhancement.State.ENHANCE, self.state_enhance)
         self.state_machine.add_state(Enhancement.State.BUY_PERK, self.state_buy_perk)
         self.state_machine.add_state(Enhancement.State.SCROLL_UP, self.state_scroll_up)
@@ -37,30 +36,19 @@ class Enhancement:
         self.level_up_old_task: SchedulePeriod = SchedulePeriod(datetime.timedelta(minutes=1),
                                                                 offset=datetime.timedelta(seconds=60))
 
-    def wait_and_move_to(self, seconds, next_state_data: StateData):
-        return StateData(
-            state=Enhancement.State.WAIT,
-            wait_seconds=seconds, next_state_data=next_state_data)
-
-    async def state_wait(self, meta: Meta):
-        if meta['wait_seconds'] <= 1:
-            return meta.next_state_data
-
-        meta['wait_seconds'] -= 1
-
     async def state_scroll_up(self, meta: Meta):
         clicks = meta.setdefault('clicks', 1)
         for _ in range(clicks):
             await self.main_window.monster_scroll_up()
 
-        return self.wait_and_move_to(2, meta.next_state_data)
+        return self.state_machine.wait_and_move_to(2, meta.next_state_data)
 
     async def state_scroll_down(self, meta: Meta):
         clicks = meta.setdefault('clicks', 1)
         for _ in range(clicks):
             await self.main_window.monster_scroll_down()
 
-        return self.wait_and_move_to(2, meta.next_state_data)
+        return self.state_machine.wait_and_move_to(2, meta.next_state_data)
 
     async def state_buy_perk(self, meta: Meta):
         logger.debug('buy perk')
@@ -85,7 +73,7 @@ class Enhancement:
 
                 await self.main_window.click(p)
 
-        return self.wait_and_move_to(2, meta.next_state_data)
+        return self.state_machine.wait_and_move_to(2, meta.next_state_data)
 
     async def state_enhance(self, meta: Meta):
         logger.info('try click level up or hire')
@@ -125,7 +113,7 @@ class Enhancement:
 
         dt = datetime.datetime.now()
         if await self.buy_perk_task.try_trigger(dt):
-            return self.wait_and_move_to(5, StateData(
+            return self.state_machine.wait_and_move_to(5, StateData(
                 Enhancement.State.BUY_PERK,
                 next_state_data=StateData(
                     Enhancement.State.SCROLL_DOWN,
@@ -148,7 +136,7 @@ class Enhancement:
                         )
                     )
 
-        return self.wait_and_move_to(wait_seconds, StateData(Enhancement.State.ENHANCE, enhance_wait=wait_seconds))
+        return self.state_machine.wait_and_move_to(wait_seconds, StateData(Enhancement.State.ENHANCE, enhance_wait=wait_seconds))
 
     async def state_level_up_old(self, meta: Meta):
         logger.info('level up old')
