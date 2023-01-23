@@ -1,6 +1,7 @@
 from enum import Enum
 
-from gui import create_gui_impl
+from common.platform_layer import PlatformLayerBase
+from gui import create_gui
 from gui.base import GUIBase
 from insanity_clicker.window.window_main import MainWindow
 from .stats import Stats
@@ -18,13 +19,16 @@ class InsanityClickerApp:
         LENS_OF_DARKNESS_8 = 8
         MAD_HATTERS_CLOCKS_9 = 9
 
-    @staticmethod
-    def create():
-        return InsanityClickerApp(create_gui_impl())
-
-    def __init__(self, gui: GUIBase):
+    def __init__(self, gui: GUIBase, platform_layer: PlatformLayerBase):
         self.gui: GUIBase = gui
         self.stats: Stats = Stats()
+        self.platform_layer: PlatformLayerBase = platform_layer
 
     def switch_to_main_window(self) -> MainWindow:
         return MainWindow(self.gui, self.stats)
+
+    def is_launched(self) -> bool:
+        return self.platform_layer.get_pid('insanity-clicker.exe') is not None
+
+    def launch(self):
+        return self.platform_layer.launch('')

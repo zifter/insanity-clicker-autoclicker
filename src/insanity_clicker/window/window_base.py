@@ -2,7 +2,7 @@ from typing import List
 
 from PIL import Image
 
-from common import get_res_path, load_image
+from common.res import get_res_path, load_image
 from gui.base import Point, GUIBase
 
 from insanity_clicker.logger import logger

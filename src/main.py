@@ -10,13 +10,16 @@ fileConfig(Path(__file__).parent / 'logging.ini')
 import asyncio
 from autoclicker import Runner
 from insanity_clicker import InsanityClickerApp
+from common.platform_layer import create_platform_layer
+from gui import create_gui
 
 
 logger = logging.getLogger('main')
 
 
 async def main():
-    clicker = Runner(InsanityClickerApp.create())
+    app = InsanityClickerApp(create_gui(), create_platform_layer())
+    clicker = Runner(app)
 
     def exit_gracefully(_signum, _frame):
         logger.warning("[!] got exit signal")

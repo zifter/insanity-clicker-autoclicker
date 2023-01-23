@@ -1,7 +1,7 @@
 import asyncio
 import datetime
 
-from common import walkthrough_dir
+from common.res import walkthrough_dir
 from gui.base import Point
 
 from insanity_clicker.logger import logger

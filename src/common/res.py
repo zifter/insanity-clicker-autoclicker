@@ -4,12 +4,16 @@ from pathlib import Path
 from PIL import Image
 
 
+def get_repo_dir() -> Path:
+    return Path(__file__).parent.parent.parent
+
+
 def get_res_path() -> Path:
-    return Path(__file__).parent.parent / 'res'
+    return get_repo_dir() / 'res'
 
 
 def walkthrough_dir() -> Path:
-    return Path(__file__).parent.parent / 'walkthrough'
+    return get_repo_dir() / 'walkthrough'
 
 
 @cache
