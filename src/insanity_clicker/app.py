@@ -28,7 +28,8 @@ class InsanityClickerApp:
         return MainWindow(self.gui, self.stats)
 
     def is_launched(self) -> bool:
-        return self.platform_layer.get_pid('insanity-clicker.exe') is not None
+        pid = self.platform_layer.get_pid('Insanity Clicker.exe')
+        return pid is not None
 
     def launch(self):
-        return self.platform_layer.launch('')
+        return self.platform_layer.launch('steam://rungameid/393530')

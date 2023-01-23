@@ -24,7 +24,7 @@ class StrategyWalkthrough(StrategyBase):
         delta = timedelta(hours=1)
         self.tasks: List[ScheduledTask] = [
             ScheduledTask(delta, self.trigger_amnesia, offset=delta),
-            ScheduledTask(timedelta(minutes=1), self.trigger_check_if_app_is_launched),
+            ScheduledTask(timedelta(seconds=10), self.trigger_check_if_app_is_launched),
         ]
 
         self.active_strategy: StrategyBase | None = None
@@ -69,9 +69,8 @@ class StrategyWalkthrough(StrategyBase):
         if self.app.is_launched():
             return StateData(StrategyWalkthrough.State.SWITCH_TO_ENHANCEMENT)
         else:
-            # TODO WAIT
-            self.app.launch('TODO')
-            return self.state_machine.wait_and_move_to(10, StateData(StrategyWalkthrough.State.SWITCH_TO_ENHANCEMENT))
+            self.app.launch()
+            return self.state_machine.wait_and_move_to(15, StateData(StrategyWalkthrough.State.SWITCH_TO_ENHANCEMENT))
 
     async def state_switch_to_enhancement(self, meta: Meta):
         main_window = self.app.switch_to_main_window()
