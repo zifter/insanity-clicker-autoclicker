@@ -22,14 +22,14 @@ class MainWindow(WindowBase):
     async def use_perk(self, perk):
         logger.info('Use perk %s', perk.name)
 
-        self.stats.used_perks += 1
+        self.stats.use_perk()
 
         await self.gui.press_key(str(perk.value))
 
     async def try_find_chest_and_click(self) -> bool:
         logger.info('find chest')
         if await self._try_find_and_click_on_button('chest_part.png'):
-            self.stats.opened_chest += 1
+            self.stats.open_chest()
             logger.debug('chest found')
             return True
 
@@ -58,7 +58,7 @@ class MainWindow(WindowBase):
             for _ in range(5):
                 await asyncio.sleep(1)
                 if await self.press_dialog_button_yes():
-                    self.stats.amnesia += 1
+                    self.stats.amnesia()
                     return True
 
         return False

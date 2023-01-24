@@ -94,7 +94,7 @@ class Enhancement:
             for p in hire_pos:
                 logger.info('Click on hire')
                 await self.main_window.click(p)
-                self.main_window.stats.hired += 1
+                self.main_window.stats.hire()
 
             self.buy_perk_task.reset()
             self.level_up_old_task.reset()
@@ -107,7 +107,7 @@ class Enhancement:
 
             for p in level_up_pos:
                 await self.main_window.click(p)
-                self.main_window.stats.level_ups += 1
+                self.main_window.stats.level_up()
 
             await self.main_window.q_up()
 
@@ -151,7 +151,7 @@ class Enhancement:
 
             for p in level_up_pos:
                 await self.main_window.click(p)
-                self.main_window.stats.level_ups += 1
+                self.main_window.stats.level_up()
 
             await self.main_window.q_up()
 

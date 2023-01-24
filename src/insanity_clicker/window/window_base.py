@@ -6,20 +6,20 @@ from common.res import get_res_path, load_image
 from gui.base import Point, GUIBase
 
 from insanity_clicker.logger import logger
-from insanity_clicker.stats import Stats
+from insanity_clicker.stats import AppStats
 
 
 class WindowBase:
-    def __init__(self, gui: GUIBase, stats: Stats):
+    def __init__(self, gui: GUIBase, stats: AppStats):
         self.gui: GUIBase = gui
-        self.stats: Stats = stats
+        self.stats: AppStats = stats
 
     async def click(self, p: Point):
         logger.debug('click on %s', p)
 
         await self.gui.click(p)
 
-        self.stats.clicks += 1
+        self.stats.click()
 
     async def q_down(self):
         await self.key_action('q', 'down')
@@ -37,7 +37,7 @@ class WindowBase:
         else:
             assert False, action
 
-        self.stats.keys += 1
+        self.stats.press_key()
 
     async def load_image(self, image_path: str) -> Image.Image:
         return load_image(get_res_path()/image_path)

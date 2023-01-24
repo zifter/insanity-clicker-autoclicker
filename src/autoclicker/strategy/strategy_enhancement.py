@@ -109,13 +109,13 @@ class StrategyEnhancement(StrategyBase):
         chest_pos = await self.main_window.gui.locate_all(chest_img, screenshot, confidence=0.95)
         if chest_pos:
             logger.info('chest found')
-            self.main_window.stats.opened_chest += 1
+            self.main_window.stats.open_chest()
             await self.main_window.click(chest_pos[0])
 
         bee_pos = await self.main_window.gui.locate_all(bee_img, screenshot, confidence=0.90)
         if bee_pos:
             logger.info('bee found')
-            self.main_window.stats.bee += 1
+            self.main_window.stats.bee()
             self.click_target.push_default_target(bee_pos[0])
 
             task = ScheduledTask(

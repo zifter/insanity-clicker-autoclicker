@@ -1,10 +1,9 @@
 from enum import Enum
 
 from common.platform_layer import PlatformLayerBase
-from gui import create_gui
 from gui.base import GUIBase
 from insanity_clicker.window.window_main import MainWindow
-from .stats import Stats
+from .stats import AppStats
 from .window.window_overlay import OverlayWindow
 
 
@@ -22,7 +21,7 @@ class InsanityClickerApp:
 
     def __init__(self, gui: GUIBase, platform_layer: PlatformLayerBase):
         self.gui: GUIBase = gui
-        self.stats: Stats = Stats()
+        self.stats: AppStats = AppStats()
         self.platform_layer: PlatformLayerBase = platform_layer
 
     def switch_to_main_window(self) -> MainWindow:
