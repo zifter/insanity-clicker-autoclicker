@@ -14,9 +14,10 @@ from ..state_machine import StateMachine, Meta, StateData
 class StrategyWalkthrough(StrategyBase):
     class State(Enum):
         LAUNCH_APP = 1
-        SWITCH_TO_ENHANCEMENT = 2
-        ENHANCEMENT = 3
-        AMNESIA = 4
+        WAIT_LAUNCHING_COMPLETE = 2
+        SWITCH_TO_ENHANCEMENT = 3
+        ENHANCEMENT = 4
+        AMNESIA = 5
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -25,12 +26,14 @@ class StrategyWalkthrough(StrategyBase):
         self.tasks: List[ScheduledTask] = [
             ScheduledTask(delta, self.trigger_amnesia, offset=delta),
             ScheduledTask(timedelta(seconds=10), self.trigger_check_if_app_is_launched),
+            ScheduledTask(timedelta(seconds=15), self.trigger_check_app_crash),
         ]
 
         self.active_strategy: StrategyBase | None = None
 
         self.state_machine = StateMachine(StrategyWalkthrough.State.LAUNCH_APP)
         self.state_machine.add_state(StrategyWalkthrough.State.LAUNCH_APP, self.state_launch_app)
+        self.state_machine.add_state(StrategyWalkthrough.State.WAIT_LAUNCHING_COMPLETE, self.state_wait_launching_complete)
         self.state_machine.add_state(StrategyWalkthrough.State.SWITCH_TO_ENHANCEMENT, self.state_switch_to_enhancement)
         self.state_machine.add_state(StrategyWalkthrough.State.ENHANCEMENT, self.state_enhancement)
         self.state_machine.add_state(StrategyWalkthrough.State.AMNESIA, self.state_amnesia)
@@ -51,6 +54,10 @@ class StrategyWalkthrough(StrategyBase):
             logger.warning('Application is not running')
             self.state_machine.request_next_state(StateData(StrategyWalkthrough.State.LAUNCH_APP))
 
+    async def trigger_check_app_crash(self):
+        if await self.app.overlay_window().is_alert_activated():
+            self.app.close()
+
     async def beat(self):
         await self.state_machine.process()
 
@@ -70,7 +77,7 @@ class StrategyWalkthrough(StrategyBase):
             return StateData(StrategyWalkthrough.State.SWITCH_TO_ENHANCEMENT)
         else:
             self.app.launch()
-            return self.state_machine.wait_and_move_to(15, StateData(StrategyWalkthrough.State.SWITCH_TO_ENHANCEMENT))
+            return StateData(StrategyWalkthrough.State.WAIT_LAUNCHING_COMPLETE)
 
     async def state_switch_to_enhancement(self, meta: Meta):
         main_window = self.app.switch_to_main_window()
@@ -81,9 +88,12 @@ class StrategyWalkthrough(StrategyBase):
     async def state_enhancement(self, meta: Meta):
         await self.active_strategy.run()
 
-        return None
-
     async def state_amnesia(self, meta: Meta):
         main_window = self.app.switch_to_main_window()
         await main_window.amnesia()
         return StateData(StrategyWalkthrough.State.SWITCH_TO_ENHANCEMENT)
+
+    async def state_wait_launching_complete(self, meta: Meta):
+        mm = self.app.switch_to_main_window()
+        if mm.press_take_teeth():
+            return StateData(StrategyWalkthrough.State.SWITCH_TO_ENHANCEMENT)

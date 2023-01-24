@@ -66,10 +66,12 @@ class MainWindow(WindowBase):
     async def press_dialog_button_yes(self) -> bool:
         logger.info('Press YES on dialog button')
 
-        if await self._try_find_and_click_on_button('btn_dialog_yes.png'):
-            return True
+        return await self._try_find_and_click_on_button('btn_dialog_yes.png')
 
-        return False
+    async def press_take_teeth(self) -> bool:
+        logger.info('Press take teeth button')
+
+        return await self._try_find_and_click_on_button('btn_take_teeth.png')
 
     async def monster_scroll_up(self) -> bool:
         logger.info('scroll up monsters')

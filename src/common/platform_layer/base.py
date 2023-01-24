@@ -22,6 +22,14 @@ class PlatformLayerBase:
                 return p
         return None
 
+    def close(self, name) -> bool:
+        pid = self.get_pid(name)
+        if pid:
+            pid.kill()
+            return True
+        else:
+            return False
+
     def launch(self, exe_path) -> bool:
         os.system(f'cmd /c start {exe_path}')
         return True

@@ -5,6 +5,7 @@ from gui import create_gui
 from gui.base import GUIBase
 from insanity_clicker.window.window_main import MainWindow
 from .stats import Stats
+from .window.window_overlay import OverlayWindow
 
 
 class InsanityClickerApp:
@@ -27,9 +28,16 @@ class InsanityClickerApp:
     def switch_to_main_window(self) -> MainWindow:
         return MainWindow(self.gui, self.stats)
 
+    def overlay_window(self) -> OverlayWindow:
+        return OverlayWindow(self.gui, self.stats)
+
     def is_launched(self) -> bool:
         pid = self.platform_layer.get_pid('Insanity Clicker.exe')
         return pid is not None
 
     def launch(self):
         return self.platform_layer.launch('steam://rungameid/393530')
+
+    def close(self):
+        return self.platform_layer.close('Insanity Clicker.exe')
+
