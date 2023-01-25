@@ -6,7 +6,7 @@ class AppStats:
         self.runs = [RunStats()]
 
     def crash(self):
-        self.crash += 1
+        self.crashes += 1
 
     def alerts(self):
         self.alerts += 1
