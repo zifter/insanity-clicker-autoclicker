@@ -1,14 +1,14 @@
 class AppStats:
     def __init__(self):
-        self.crashes = 0
+        self.restarts = 0
         self.alerts = 0
         self.amnesias = 0
         self.runs = [RunStats()]
 
-    def crash(self):
-        self.crash += 1
+    def restart(self):
+        self.restarts += 1
 
-    def alerts(self):
+    def alert(self):
         self.alerts += 1
 
     def open_chest(self):
@@ -36,14 +36,18 @@ class AppStats:
         self.amnesias += 1
         self.runs.append(RunStats())
 
+    def total_run_stats(self):
+        return sum(self.runs)
+
     def __str__(self):
         runs_str = ''.join(f'> Run {i}:\n{str(self.runs[i])}' for i in range(len(self.runs)))
         return "==== STATS ====\n" \
                f"Amnesia: {self.amnesias}\n" \
                f"Alerts: {self.alerts}\n" \
-               f"Crashes: {self.crashes}\n" \
-               f"Run count: {len(self.runs)}\n" + runs_str + \
-            "==== END ===="
+               f"Restarts: {self.restarts}\n" \
+               f"Run count: {len(self.runs)}\n" \
+               f"Total:\n{self.total_run_stats()}\n" + runs_str + \
+                "==== END ===="
 
 
 class RunStats:
@@ -55,7 +59,19 @@ class RunStats:
         self.keys = 0
         self.hired = 0
         self.bee = 0
-        self.crashes = 0
 
     def __str__(self):
         return ''.join(f'  {k}: {v}\n' for k, v in self.__dict__.items())
+
+    def __radd__(self, other):
+        if other == 0:
+            tmp = RunStats()
+            return tmp.__add__(self)
+        else:
+            return self.__add__(other)
+
+    def __add__(self, other):
+        for k, v in other.__dict__.items():
+            setattr(self, k, getattr(self, k) + v)
+
+        return self

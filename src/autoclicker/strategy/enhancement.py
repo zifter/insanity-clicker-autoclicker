@@ -90,17 +90,21 @@ class Enhancement:
 
         wait_seconds = min(meta.setdefault('enhance_wait', 1)*2, 16)
         if hire_pos:
-            wait_seconds = 1
+            wait_seconds = max(wait_seconds/2, 1)
+
+            await self.main_window.q_down()
             for p in hire_pos:
                 logger.info('Click on hire')
                 await self.main_window.click(p)
                 self.main_window.stats.hire()
 
+            await self.main_window.q_up()
+
             self.buy_perk_task.reset()
             self.level_up_old_task.reset()
 
         if level_up_pos:
-            wait_seconds = 2
+            wait_seconds = max(wait_seconds/2, 2)
 
             logger.info('Click on level up with ctrl')
             await self.main_window.q_down()

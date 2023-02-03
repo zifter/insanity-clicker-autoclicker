@@ -26,7 +26,7 @@ class StrategyWalkthrough(StrategyBase):
         self.tasks: List[ScheduledTask] = [
             ScheduledTask(delta, self.trigger_amnesia, offset=delta),
             ScheduledTask(timedelta(seconds=10), self.trigger_check_if_app_is_launched),
-            ScheduledTask(timedelta(seconds=15), self.trigger_check_if_app_crash),
+            ScheduledTask(timedelta(seconds=15), self.trigger_check_if_app_alerts),
         ]
 
         self.active_strategy: StrategyBase | None = None
@@ -55,10 +55,13 @@ class StrategyWalkthrough(StrategyBase):
             self.active_strategy.request_stop()
             self.active_strategy = None
 
+            self.app.stats.restart()
+
             self.state_machine.request_next_state(StateData(StrategyWalkthrough.State.LAUNCH_APP))
 
-    async def trigger_check_if_app_crash(self):
+    async def trigger_check_if_app_alerts(self):
         if await self.app.overlay_window().is_alert_activated():
+            self.app.stats.alert()
             self.app.close()
 
     async def beat(self):
