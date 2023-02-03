@@ -32,6 +32,8 @@ class StrategyEnhancement(StrategyBase):
         self.click_target.push_default_target(await self.main_window.center_of_monster())
 
         await self.main_window.turn_on_automatic_progress()
+        for _ in range(6):
+            await self.main_window.monster_scroll_down()
 
         self.main_window.click = self.click_override
         self.main_window.key_action = self.key_action_override

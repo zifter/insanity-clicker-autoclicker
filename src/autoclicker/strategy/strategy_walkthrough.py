@@ -22,7 +22,7 @@ class StrategyWalkthrough(StrategyBase):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        delta = timedelta(hours=1)
+        delta = timedelta(hours=1, minutes=5)
         self.tasks: List[ScheduledTask] = [
             ScheduledTask(delta, self.trigger_amnesia, offset=delta),
             ScheduledTask(timedelta(seconds=10), self.trigger_check_if_app_is_launched),
@@ -52,10 +52,10 @@ class StrategyWalkthrough(StrategyBase):
     async def trigger_check_if_app_is_launched(self):
         if not self.app.is_launched():
             logger.warning('Application is not running. Stop enhancement')
-            self.active_strategy.request_stop()
-            self.active_strategy = None
-
-            self.app.stats.restart()
+            if self.active_strategy:
+                self.active_strategy.request_stop()
+                self.active_strategy = None
+                self.app.stats.restart()
 
             self.state_machine.request_next_state(StateData(StrategyWalkthrough.State.LAUNCH_APP))
 
@@ -101,5 +101,5 @@ class StrategyWalkthrough(StrategyBase):
 
     async def state_wait_launching_complete(self, meta: Meta):
         mm = self.app.switch_to_main_window()
-        if mm.press_take_teeth():
+        if await mm.press_take_teeth():
             return StateData(StrategyWalkthrough.State.SWITCH_TO_ENHANCEMENT)
