@@ -88,7 +88,7 @@ class Enhancement:
         hire_pos = await self.main_window.gui.locate_all(hire_img, screenshot, confidence=0.95)
         hire_pos = sorted(hire_pos, key=lambda v: v.y, reverse=True)
 
-        wait_seconds = min(meta.setdefault('enhance_wait', 1)*2, 16)
+        wait_seconds = min(meta.setdefault('enhance_wait', 1)*2, 64)
         if hire_pos:
             wait_seconds = max(wait_seconds/2, 1)
 
